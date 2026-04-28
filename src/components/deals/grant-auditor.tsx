@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { usePublicClient, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { parseUnits } from "viem";
 import { dealRoomAbi } from "@/lib/abi";
 import { DEAL_ROOM_ADDRESS } from "@/lib/contracts";
 import { Button } from "@/components/ui/button";
@@ -12,8 +13,28 @@ import { TxLink } from "@/components/tx/tx-link";
 export function GrantAuditor({ dealId }: { dealId: number }) {
   const [auditor, setAuditor] = useState("");
   const [investor, setInvestor] = useState("");
+  const publicClient = usePublicClient();
   const { data: hash, writeContract, isPending, error } = useWriteContract();
   const { isLoading } = useWaitForTransactionReceipt({ hash });
+
+  const getFees = async () => {
+    if (!publicClient) return {};
+    const priorityFallback = parseUnits("0.1", 9);
+
+    try {
+      const fees = await publicClient.estimateFeesPerGas();
+      const maxFee = fees.maxFeePerGas ?? fees.gasPrice;
+      const maxPriority = fees.maxPriorityFeePerGas ?? priorityFallback;
+      return {
+        ...(maxFee ? { maxFeePerGas: maxFee } : {}),
+        ...(maxPriority ? { maxPriorityFeePerGas: maxPriority } : {})
+      };
+    } catch {
+      const gasPrice = await publicClient.getGasPrice().catch(() => undefined);
+      const maxFee = gasPrice ? gasPrice * 2n : parseUnits("1", 9);
+      return { maxFeePerGas: maxFee, maxPriorityFeePerGas: priorityFallback };
+    }
+  };
 
   return (
     <div className="space-y-3">
@@ -27,14 +48,16 @@ export function GrantAuditor({ dealId }: { dealId: number }) {
       </div>
       <div className="flex items-center gap-2">
         <Button
-          onClick={() =>
+          onClick={async () => {
+            const fees = await getFees();
             writeContract({
               address: DEAL_ROOM_ADDRESS as `0x${string}`,
               abi: dealRoomAbi,
               functionName: "grantAuditorAccess",
-              args: [BigInt(dealId), auditor as `0x${string}`, investor as `0x${string}`]
-            })
-          }
+              args: [BigInt(dealId), auditor as `0x${string}`, investor as `0x${string}`],
+              ...fees
+            });
+          }}
           disabled={isPending}
         >
           {isPending ? "Granting" : "Grant Access"}
