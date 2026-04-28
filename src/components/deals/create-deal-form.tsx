@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { usePublicClient, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { dealRoomAbi } from "@/lib/abi";
 import { DEAL_ROOM_ADDRESS } from "@/lib/contracts";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ export function CreateDealForm() {
   const [description, setDescription] = useState("");
   const [documentHash, setDocumentHash] = useState("");
 
+  const publicClient = usePublicClient();
   const { data: hash, writeContract, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash
@@ -24,9 +25,10 @@ export function CreateDealForm() {
 
   const disabled = !DEAL_ROOM_ADDRESS;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!maturityDate) return;
     const maturity = BigInt(Math.floor(new Date(maturityDate).getTime() / 1000));
+    const fees = publicClient ? await publicClient.estimateFeesPerGas() : null;
     writeContract({
       address: DEAL_ROOM_ADDRESS as `0x${string}`,
       abi: dealRoomAbi,
@@ -39,7 +41,9 @@ export function CreateDealForm() {
           description,
           documentHash
         }
-      ]
+      ],
+      ...(fees?.maxFeePerGas ? { maxFeePerGas: fees.maxFeePerGas } : {}),
+      ...(fees?.maxPriorityFeePerGas ? { maxPriorityFeePerGas: fees.maxPriorityFeePerGas } : {})
     });
   };
 
