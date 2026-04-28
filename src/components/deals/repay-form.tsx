@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, usePublicClient, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { dealRoomAbi } from "@/lib/abi";
 import { DEAL_ROOM_ADDRESS } from "@/lib/contracts";
 import { Button } from "@/components/ui/button";
@@ -16,12 +16,27 @@ export function RepayForm({ dealId }: { dealId: number }) {
   const [isEncrypting, setIsEncrypting] = useState(false);
   const [encryptedHandle, setEncryptedHandle] = useState<string | null>(null);
   const [handleProof, setHandleProof] = useState<string | null>(null);
+  const [encryptError, setEncryptError] = useState<string | null>(null);
+  const { isConnected } = useAccount();
+  const publicClient = usePublicClient();
   const handleClient = useHandleClient();
   const { data: hash, writeContract, isPending, error } = useWriteContract();
   const { isLoading: confirming } = useWaitForTransactionReceipt({ hash });
 
   const handleEncrypt = async () => {
-    if (!amount || !handleClient || !DEAL_ROOM_ADDRESS) return;
+    setEncryptError(null);
+    if (!amount) {
+      setEncryptError("Enter a repayment amount first.");
+      return;
+    }
+    if (!handleClient) {
+      setEncryptError("Connect wallet on Arbitrum Sepolia to initialize encryption.");
+      return;
+    }
+    if (!DEAL_ROOM_ADDRESS) {
+      setEncryptError("Deal room address not configured.");
+      return;
+    }
     setIsEncrypting(true);
     try {
       const value = parseUnits(amount, 18);
@@ -32,18 +47,23 @@ export function RepayForm({ dealId }: { dealId: number }) {
       );
       setEncryptedHandle(handle);
       setHandleProof(handleProof);
+    } catch (error) {
+      setEncryptError(error instanceof Error ? error.message : "Encryption failed.");
     } finally {
       setIsEncrypting(false);
     }
   };
 
-  const handleRepay = () => {
+  const handleRepay = async () => {
     if (!encryptedHandle || !handleProof) return;
+    const fees = publicClient ? await publicClient.estimateFeesPerGas() : null;
     writeContract({
       address: DEAL_ROOM_ADDRESS as `0x${string}`,
       abi: dealRoomAbi,
       functionName: "repay",
-      args: [BigInt(dealId), encryptedHandle as `0x${string}`, handleProof as `0x${string}`]
+      args: [BigInt(dealId), encryptedHandle as `0x${string}`, handleProof as `0x${string}`],
+      ...(fees?.maxFeePerGas ? { maxFeePerGas: fees.maxFeePerGas } : {}),
+      ...(fees?.maxPriorityFeePerGas ? { maxPriorityFeePerGas: fees.maxPriorityFeePerGas } : {})
     });
   };
 
@@ -64,6 +84,10 @@ export function RepayForm({ dealId }: { dealId: number }) {
         <TxLink hash={hash} />
       </div>
       <div className="text-xs text-white/60">Encrypted with iExec Nox.</div>
+      {!isConnected ? (
+        <div className="text-xs text-amber-300">Connect wallet to enable encryption.</div>
+      ) : null}
+      {encryptError ? <div className="text-xs text-red-300">{encryptError}</div> : null}
       {error ? <div className="text-xs text-red-300">{error.message}</div> : null}
     </div>
   );
