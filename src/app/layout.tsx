@@ -12,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Obscura Finance — Confidential RWA Deal Rooms",
+  title: "Obscura Finance",
   description: "Private credit funding with sealed bids, confidential token transfers, and permissioned audit disclosure.",
   icons: {
     icon: "/obscura-logo.png",
