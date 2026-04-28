@@ -65,7 +65,7 @@ export default function LandingPage() {
         </div>
 
         {/* Content sits above background */}
-        <div className="relative z-10 space-y-8 px-6 pb-16 pt-20">
+        <div className="relative z-10 space-y-8 rounded-3xl bg-bg/75 px-6 pb-16 pt-20 backdrop-blur-md">
           <div className="inline-flex items-center gap-2 rounded-full border border-purple/25 bg-purple-subtle/80 px-4 py-1.5 text-xs font-medium text-purple-bright backdrop-blur-sm">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-purple" />
             Confidential RWA Protocol · Arbitrum Sepolia
@@ -77,7 +77,7 @@ export default function LandingPage() {
             <span className="text-purple-gradient">sealed onchain.</span>
           </h1>
 
-          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-text-2">
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-text-1/90">
             Obscura Finance is a confidential deal room where investors submit sealed bids,
             allocations stay hidden, repayments settle onchain, and auditors verify details
             through permissioned disclosure.
@@ -99,8 +99,8 @@ export default function LandingPage() {
           <div className="mx-auto mt-2 flex max-w-xl flex-wrap justify-center gap-px overflow-hidden rounded-2xl border border-border bg-border backdrop-blur-sm">
             {stats.map((s) => (
               <div key={s.label} className="flex flex-1 min-w-[90px] flex-col items-center gap-1 bg-card/80 px-4 py-4 backdrop-blur-sm">
-                <span className="text-lg font-semibold text-purple">{s.value}</span>
-                <span className="text-xs text-text-3 uppercase tracking-widest">{s.label}</span>
+                <span className="text-lg font-semibold text-purple-bright">{s.value}</span>
+                <span className="text-xs text-text-2 uppercase tracking-widest">{s.label}</span>
               </div>
             ))}
           </div>
@@ -190,7 +190,7 @@ export default function LandingPage() {
         <div className="relative z-10 p-10">
           <p className="text-xs font-semibold uppercase tracking-widest text-purple">Ready?</p>
           <h2 className="mt-3 text-3xl font-semibold text-text-1">Run the full confidential funding flow</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-text-2">
+          <p className="mx-auto mt-3 max-w-xl text-sm text-text-1/85">
             Demo mode walks you through every onchain action in under four minutes. Deal state, bids, and repayments are pulled live from the contract.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
