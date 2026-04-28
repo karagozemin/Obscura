@@ -172,28 +172,42 @@ export function DealList({ mode }: { mode: Mode }) {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() =>
+                    onClick={async () => {
+                      const fees = publicClient
+                        ? await publicClient.estimateFeesPerGas()
+                        : null;
                       writeContract({
                         address: dealRoomAddress,
                         abi: dealRoomAbi,
                         functionName: "setFunded",
-                        args: [BigInt(index)]
-                      })
-                    }
+                        args: [BigInt(index)],
+                        ...(fees?.maxFeePerGas ? { maxFeePerGas: fees.maxFeePerGas } : {}),
+                        ...(fees?.maxPriorityFeePerGas
+                          ? { maxPriorityFeePerGas: fees.maxPriorityFeePerGas }
+                          : {})
+                      });
+                    }}
                     disabled={actionPending}
                   >
                     {actionPending ? "Submitting" : "Mark Funded"}
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() =>
+                    onClick={async () => {
+                      const fees = publicClient
+                        ? await publicClient.estimateFeesPerGas()
+                        : null;
                       writeContract({
                         address: dealRoomAddress,
                         abi: dealRoomAbi,
                         functionName: "closeDeal",
-                        args: [BigInt(index)]
-                      })
-                    }
+                        args: [BigInt(index)],
+                        ...(fees?.maxFeePerGas ? { maxFeePerGas: fees.maxFeePerGas } : {}),
+                        ...(fees?.maxPriorityFeePerGas
+                          ? { maxPriorityFeePerGas: fees.maxPriorityFeePerGas }
+                          : {})
+                      });
+                    }}
                     disabled={actionPending}
                   >
                     {actionPending ? "Submitting" : "Close Deal"}
