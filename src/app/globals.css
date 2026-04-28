@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-surface text-white;
+  font-feature-settings: "cv11", "ss01";
+}
+
+* {
+  @apply border-border;
+}

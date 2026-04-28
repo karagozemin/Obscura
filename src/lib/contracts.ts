@@ -1,0 +1,5 @@
+export const DEAL_ROOM_ADDRESS =
+  process.env.NEXT_PUBLIC_DEAL_ROOM_ADDRESS ?? "";
+
+export const CONFIDENTIAL_TOKEN_ADDRESS =
+  process.env.NEXT_PUBLIC_CONFIDENTIAL_TOKEN_ADDRESS ?? "";
