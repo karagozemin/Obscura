@@ -19,6 +19,7 @@ export function BidForm({ dealId }: { dealId: number }) {
   const [encryptedHandle, setEncryptedHandle] = useState<string | null>(null);
   const [handleProof, setHandleProof] = useState<string | null>(null);
   const [encryptError, setEncryptError] = useState<string | null>(null);
+  const [submitNotice, setSubmitNotice] = useState<string | null>(null);
   const { isConnected } = useAccount();
   const chainId = useChainId();
   const isCorrectChain = chainId === arbitrumSepolia.id;
@@ -37,7 +38,7 @@ export function BidForm({ dealId }: { dealId: number }) {
     functionName: "decimals",
     query: { enabled: !!underlyingAddress }
   });
-  const tokenDecimals = typeof decimals === "number" ? decimals : 18;
+  const tokenDecimals = typeof decimals === "number" ? decimals : null;
 
   const {
     data: approveHash,
@@ -52,8 +53,9 @@ export function BidForm({ dealId }: { dealId: number }) {
     error: bidError
   } = useWriteContract();
 
-  const { isLoading: approveConfirming } = useWaitForTransactionReceipt({ hash: approveHash });
+  const { isLoading: approveConfirming, isSuccess: approveConfirmed } = useWaitForTransactionReceipt({ hash: approveHash });
   const { isLoading: bidConfirming } = useWaitForTransactionReceipt({ hash: bidHash });
+  const operatorReady = approveConfirmed || !approveHash;
 
   const disabled = !DEAL_ROOM_ADDRESS || !CONFIDENTIAL_TOKEN_ADDRESS;
 
@@ -81,8 +83,13 @@ export function BidForm({ dealId }: { dealId: number }) {
 
   const handleEncrypt = async () => {
     setEncryptError(null);
+    setSubmitNotice(null);
     if (!amount) {
       setEncryptError("Enter a bid amount first.");
+      return;
+    }
+    if (tokenDecimals === null) {
+      setEncryptError("Token decimals are still loading. Try again in a moment.");
       return;
     }
     if (!handleClient) {
@@ -116,7 +123,27 @@ export function BidForm({ dealId }: { dealId: number }) {
 
   const handleBid = async () => {
     if (!encryptedHandle || !handleProof || !sealedBid) return;
+    setSubmitNotice(null);
     const fees = await getFees();
+    let gas: bigint | null = null;
+    if (publicClient) {
+      try {
+        gas = await publicClient.estimateContractGas({
+          address: DEAL_ROOM_ADDRESS as `0x${string}`,
+          abi: dealRoomAbi,
+          functionName: "submitBid",
+          args: [
+            BigInt(dealId),
+            sealedBid as `0x${string}`,
+            encryptedHandle as `0x${string}`,
+            handleProof as `0x${string}`
+          ]
+        });
+      } catch {
+        setSubmitNotice("Check Funding state, operator approval, and cUSDC balance.");
+        gas = null;
+      }
+    }
     submitBid({
       address: DEAL_ROOM_ADDRESS as `0x${string}`,
       abi: dealRoomAbi,
@@ -127,6 +154,7 @@ export function BidForm({ dealId }: { dealId: number }) {
         encryptedHandle as `0x${string}`,
         handleProof as `0x${string}`
       ],
+      ...(gas ? { gas } : {}),
       ...fees
     });
   };
@@ -150,11 +178,11 @@ export function BidForm({ dealId }: { dealId: number }) {
         <Button
           variant="outline"
           onClick={handleEncrypt}
-          disabled={disabled || !handleClient || !isCorrectChain || isEncrypting}
+          disabled={disabled || !handleClient || !isCorrectChain || isEncrypting || tokenDecimals === null}
         >
           {isEncrypting ? "Encrypting" : "Encrypt Amount"}
         </Button>
-        <Button onClick={handleBid} disabled={disabled || bidding || !encryptedHandle}>
+        <Button onClick={handleBid} disabled={disabled || bidding || !encryptedHandle || !operatorReady}>
           {bidding ? "Submitting" : "Submit Sealed Bid"}
         </Button>
         {(approveConfirming || bidConfirming) && <span className="text-xs text-white/60">Confirming...</span>}
@@ -173,6 +201,7 @@ export function BidForm({ dealId }: { dealId: number }) {
         <div className="text-xs text-white/50">Handle: {encryptedHandle}</div>
       ) : null}
       {encryptError ? <div className="text-xs text-red-300">{encryptError}</div> : null}
+      {submitNotice ? <div className="text-xs text-amber-300">{submitNotice}</div> : null}
       {approveError ? <div className="text-xs text-red-300">{approveError.message}</div> : null}
       {bidError ? <div className="text-xs text-red-300">{bidError.message}</div> : null}
     </div>
