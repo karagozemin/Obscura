@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { dealRoomAbi, erc7984Abi } from "@/lib/abi";
 import { DEAL_ROOM_ADDRESS, CONFIDENTIAL_TOKEN_ADDRESS } from "@/lib/contracts";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ export function BidForm({ dealId }: { dealId: number }) {
   const [isEncrypting, setIsEncrypting] = useState(false);
   const [encryptedHandle, setEncryptedHandle] = useState<string | null>(null);
   const [handleProof, setHandleProof] = useState<string | null>(null);
+  const [encryptError, setEncryptError] = useState<string | null>(null);
+  const { isConnected } = useAccount();
   const handleClient = useHandleClient();
 
   const {
@@ -49,7 +51,19 @@ export function BidForm({ dealId }: { dealId: number }) {
   };
 
   const handleEncrypt = async () => {
-    if (!amount || !handleClient || !DEAL_ROOM_ADDRESS) return;
+    setEncryptError(null);
+    if (!amount) {
+      setEncryptError("Enter a bid amount first.");
+      return;
+    }
+    if (!handleClient) {
+      setEncryptError("Connect wallet on Arbitrum Sepolia to initialize encryption.");
+      return;
+    }
+    if (!DEAL_ROOM_ADDRESS) {
+      setEncryptError("Deal room address not configured.");
+      return;
+    }
     setIsEncrypting(true);
     try {
       const value = parseUnits(amount, 18);
@@ -60,6 +74,8 @@ export function BidForm({ dealId }: { dealId: number }) {
       );
       setEncryptedHandle(handle);
       setHandleProof(handleProof);
+    } catch (error) {
+      setEncryptError(error instanceof Error ? error.message : "Encryption failed.");
     } finally {
       setIsEncrypting(false);
     }
@@ -113,9 +129,13 @@ export function BidForm({ dealId }: { dealId: number }) {
       <div className="text-xs text-white/60">
         Encrypted with iExec Nox. Amount hidden onchain.
       </div>
+      {!isConnected ? (
+        <div className="text-xs text-amber-300">Connect wallet to enable encryption.</div>
+      ) : null}
       {encryptedHandle ? (
         <div className="text-xs text-white/50">Handle: {encryptedHandle}</div>
       ) : null}
+      {encryptError ? <div className="text-xs text-red-300">{encryptError}</div> : null}
       {approveError ? <div className="text-xs text-red-300">{approveError.message}</div> : null}
       {bidError ? <div className="text-xs text-red-300">{bidError.message}</div> : null}
     </div>
