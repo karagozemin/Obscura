@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { buttonStyles } from "@/components/ui/button";
 
@@ -71,11 +72,21 @@ export default function LandingPage() {
             Confidential RWA Protocol · Arbitrum Sepolia
           </div>
 
-          <h1 className="text-5xl font-semibold leading-[1.12] tracking-tight text-text-1 md:text-6xl lg:text-7xl">
-            Private credit,
-            <br />
-            <span className="text-purple-gradient">sealed onchain.</span>
-          </h1>
+          <div className="flex flex-col items-center gap-5">
+            <Image
+              src="/obscura-new-readme.png"
+              alt="Obscura Finance"
+              width={250}
+              height={250}
+              className="h-45 w-45 object-contain"
+              priority
+            />
+            <h1 className="text-5xl font-semibold leading-[1.12] tracking-tight text-text-1 md:text-6xl lg:text-7xl">
+              Private credit,
+              <br />
+              <span className="text-purple-gradient">sealed onchain.</span>
+            </h1>
+          </div>
 
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-text-1/90">
             Obscura Finance is a confidential deal room where investors submit sealed bids,

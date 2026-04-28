@@ -1,3 +1,5 @@
+![Obscura Finance](./public/obscura-readme-logo.png)
+
 # Obscura Finance
 
 **Confidential RWA Deal Rooms for sealed private credit funding.**

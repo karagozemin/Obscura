@@ -14,6 +14,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Obscura Finance — Confidential RWA Deal Rooms",
   description: "Private credit funding with sealed bids, confidential token transfers, and permissioned audit disclosure.",
+  icons: {
+    icon: "/obscura-logo.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

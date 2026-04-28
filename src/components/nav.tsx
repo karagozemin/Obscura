@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { WalletButton } from "@/components/wallet-button";
 import { cn } from "@/lib/utils";
@@ -20,9 +21,16 @@ export function Nav() {
     <nav className="glass-nav sticky top-0 z-50 border-b border-border">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="h-7 w-7 rounded-lg border border-purple/30 bg-purple-subtle flex items-center justify-center group-hover:border-purple/30 transition-colors">
-            <div className="h-3 w-3 rounded-sm bg-gold opacity-80 group-hover:opacity-100 transition-opacity" />
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="h-11 w-11 overflow-hidden rounded-xl border border-purple/30 bg-purple-subtle flex items-center justify-center group-hover:border-purple/30 transition-colors">
+            <Image
+              src="/obscura-logo.png"
+              alt="Obscura Finance"
+              width={40}
+              height={40}
+              className="h-10 w-10 object-contain"
+              priority
+            />
           </div>
           <span className="text-sm font-semibold tracking-tight text-text-1">
             Obscura<span className="text-gold">.</span>
