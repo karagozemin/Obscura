@@ -6,7 +6,7 @@ import { dealRoomAbi } from "@/lib/abi";
 import { DEAL_ROOM_ADDRESS } from "@/lib/contracts";
 import { Card } from "@/components/ui/card";
 import { DealStateBadge } from "@/components/deals/deal-state";
-import { formatToken } from "@/lib/format";
+import { EncryptedAmount } from "@/components/deals/encrypted-amount";
 import { BidForm } from "@/components/deals/bid-form";
 import { ClaimButton } from "@/components/deals/claim-button";
 import { GrantAuditor } from "@/components/deals/grant-auditor";
@@ -115,13 +115,13 @@ export function DealList({ mode }: { mode: Mode }) {
             documentHash: string;
           };
           state: number;
-          totalCommitted: bigint;
-          totalRepaid: bigint;
-          totalClaimed: bigint;
+          totalCommitted: `0x${string}`;
+          totalRepaid: `0x${string}`;
+          totalClaimed: `0x${string}`;
         };
 
         const bid = bidResults?.[index]?.result as
-          | { sealedBid: string; amount: bigint; claimed: boolean }
+          | { sealedBid: string; amount: `0x${string}`; claimed: boolean }
           | undefined;
 
         return (
@@ -138,8 +138,11 @@ export function DealList({ mode }: { mode: Mode }) {
             <div className="mt-4 grid gap-2 text-xs text-white/60 md:grid-cols-2">
               <div>Document Hash: {deal.metadata.documentHash}</div>
               <div>Maturity: {new Date(Number(deal.metadata.maturityDate) * 1000).toLocaleDateString()}</div>
-              <div>Total Committed: {formatToken(deal.totalCommitted)} CT</div>
-              <div>Total Repaid: {formatToken(deal.totalRepaid)} CT</div>
+              <div>Total Committed: Encrypted</div>
+              <div>Total Repaid: Encrypted</div>
+            </div>
+            <div className="mt-2 text-xs text-white/50">
+              Encrypted with iExec Nox. Amounts hidden onchain.
             </div>
 
             {mode === "issuer" ? (
@@ -173,6 +176,20 @@ export function DealList({ mode }: { mode: Mode }) {
                   >
                     {actionPending ? "Submitting" : "Mark Funded"}
                   </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      writeContract({
+                        address: dealRoomAddress,
+                        abi: dealRoomAbi,
+                        functionName: "closeDeal",
+                        args: [BigInt(index)]
+                      })
+                    }
+                    disabled={actionPending}
+                  >
+                    {actionPending ? "Submitting" : "Close Deal"}
+                  </Button>
                   <TxLink hash={actionHash} />
                 </div>
                 {actionError ? (
@@ -188,7 +205,10 @@ export function DealList({ mode }: { mode: Mode }) {
                 {deal.state === 1 ? <BidForm dealId={index} /> : null}
                 <div className="rounded-lg border border-border bg-black/20 p-3 text-sm text-white/70">
                   <div>Your sealed bid: {bid?.sealedBid ?? "Not submitted"}</div>
-                  <div>Committed: {bid ? `${formatToken(bid.amount)} CT` : "-"}</div>
+                  <div className="flex items-center gap-2">
+                    <span>Committed:</span>
+                    {bid ? <EncryptedAmount handle={bid.amount} /> : "-"}
+                  </div>
                   <div>Claimed: {bid?.claimed ? "Yes" : "No"}</div>
                 </div>
                 {deal.state >= 3 ? <ClaimButton dealId={index} /> : null}

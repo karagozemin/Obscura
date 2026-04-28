@@ -8,7 +8,7 @@ export default function InvestorPage() {
     <div className="space-y-10">
       <SectionHeading
         title="Investor Dashboard"
-        description="Wrap tokens into confidential assets, submit sealed bids, and claim repayments. All amounts remain private by default."
+        description="Wrap tokens into confidential assets, encrypt sealed bids with iExec Nox, and claim repayments. Amounts remain hidden onchain."
       />
       <TokenBalance />
       <WrapInstructions />

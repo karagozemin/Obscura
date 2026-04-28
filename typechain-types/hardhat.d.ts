@@ -14,19 +14,46 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
-      name: "IERC20Minimal",
+      name: "IERC7984",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC20Minimal__factory>;
+    ): Promise<Contracts.IERC7984__factory>;
+    getContractFactory(
+      name: "INoxCompute",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.INoxCompute__factory>;
+    getContractFactory(
+      name: "Nox",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Nox__factory>;
+    getContractFactory(
+      name: "IERC165",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
       name: "ObscuraDealRoom",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ObscuraDealRoom__factory>;
 
     getContractAt(
-      name: "IERC20Minimal",
+      name: "IERC7984",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
-    ): Promise<Contracts.IERC20Minimal>;
+    ): Promise<Contracts.IERC7984>;
+    getContractAt(
+      name: "INoxCompute",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.INoxCompute>;
+    getContractAt(
+      name: "Nox",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Nox>;
+    getContractAt(
+      name: "IERC165",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC165>;
     getContractAt(
       name: "ObscuraDealRoom",
       address: string | ethers.Addressable,
@@ -34,19 +61,46 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.ObscuraDealRoom>;
 
     deployContract(
-      name: "IERC20Minimal",
+      name: "IERC7984",
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IERC20Minimal>;
+    ): Promise<Contracts.IERC7984>;
+    deployContract(
+      name: "INoxCompute",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.INoxCompute>;
+    deployContract(
+      name: "Nox",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Nox>;
+    deployContract(
+      name: "IERC165",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC165>;
     deployContract(
       name: "ObscuraDealRoom",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ObscuraDealRoom>;
 
     deployContract(
-      name: "IERC20Minimal",
+      name: "IERC7984",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IERC20Minimal>;
+    ): Promise<Contracts.IERC7984>;
+    deployContract(
+      name: "INoxCompute",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.INoxCompute>;
+    deployContract(
+      name: "Nox",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Nox>;
+    deployContract(
+      name: "IERC165",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC165>;
     deployContract(
       name: "ObscuraDealRoom",
       args: any[],

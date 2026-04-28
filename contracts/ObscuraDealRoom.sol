@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.28;
 
-interface IERC20Minimal {
-    function transferFrom(address from, address to, uint256 value) external returns (bool);
-    function transfer(address to, uint256 value) external returns (bool);
-}
+import {IERC7984} from "@iexec-nox/nox-confidential-contracts/contracts/interfaces/IERC7984.sol";
+import {Nox, euint256, externalEuint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 
 contract ObscuraDealRoom {
     enum DealState {
@@ -27,18 +25,18 @@ contract ObscuraDealRoom {
         address issuer;
         DealMetadata metadata;
         DealState state;
-        uint256 totalCommitted;
-        uint256 totalRepaid;
-        uint256 totalClaimed;
+        euint256 totalCommitted;
+        euint256 totalRepaid;
+        euint256 totalClaimed;
     }
 
     struct Bid {
         bytes32 sealedBid;
-        uint256 amount;
+        euint256 amount;
         bool claimed;
     }
 
-    IERC20Minimal public immutable confidentialToken;
+    IERC7984 public immutable confidentialToken;
     Deal[] private deals;
 
     mapping(uint256 => mapping(address => Bid)) private bids;
@@ -47,8 +45,8 @@ contract ObscuraDealRoom {
     event DealCreated(uint256 indexed dealId, address indexed issuer);
     event DealStateUpdated(uint256 indexed dealId, DealState state);
     event BidSubmitted(uint256 indexed dealId, address indexed investor, bytes32 sealedBid);
-    event RepaymentSubmitted(uint256 indexed dealId, uint256 amount);
-    event Claimed(uint256 indexed dealId, address indexed investor, uint256 amount);
+    event RepaymentSubmitted(uint256 indexed dealId, euint256 amountHandle);
+    event Claimed(uint256 indexed dealId, address indexed investor, euint256 amountHandle);
     event AuditorAccessGranted(uint256 indexed dealId, address indexed auditor);
 
     modifier onlyIssuer(uint256 dealId) {
@@ -58,17 +56,18 @@ contract ObscuraDealRoom {
 
     constructor(address confidentialTokenAddress) {
         require(confidentialTokenAddress != address(0), "Invalid token");
-        confidentialToken = IERC20Minimal(confidentialTokenAddress);
+        confidentialToken = IERC7984(confidentialTokenAddress);
     }
 
     function createDeal(DealMetadata calldata metadata) external returns (uint256) {
+        euint256 zero = Nox.toEuint256(0);
         Deal memory deal = Deal({
             issuer: msg.sender,
             metadata: metadata,
             state: DealState.Open,
-            totalCommitted: 0,
-            totalRepaid: 0,
-            totalClaimed: 0
+            totalCommitted: zero,
+            totalRepaid: zero,
+            totalClaimed: zero
         });
         deals.push(deal);
         uint256 dealId = deals.length - 1;
@@ -86,32 +85,47 @@ contract ObscuraDealRoom {
         emit DealStateUpdated(dealId, DealState.Funded);
     }
 
-    function submitBid(uint256 dealId, bytes32 sealedBid, uint256 amount) external {
+    function submitBid(
+        uint256 dealId,
+        bytes32 sealedBid,
+        externalEuint256 encryptedAmount,
+        bytes calldata inputProof
+    ) external {
         Deal storage deal = deals[dealId];
         require(deal.state == DealState.Funding, "Funding not open");
         Bid storage bid = bids[dealId][msg.sender];
-        require(bid.amount == 0, "Bid exists");
-        require(amount > 0, "Amount required");
+        require(!Nox.isInitialized(bid.amount), "Bid exists");
 
-        require(confidentialToken.transferFrom(msg.sender, address(this), amount), "Transfer failed");
+        Nox.fromExternal(encryptedAmount, inputProof);
+        euint256 transferred = confidentialToken.confidentialTransferFrom(
+            msg.sender,
+            address(this),
+            encryptedAmount,
+            inputProof
+        );
 
-        bids[dealId][msg.sender] = Bid({
-            sealedBid: sealedBid,
-            amount: amount,
-            claimed: false
-        });
-        deal.totalCommitted += amount;
+        bids[dealId][msg.sender] = Bid({sealedBid: sealedBid, amount: transferred, claimed: false});
+        deal.totalCommitted = Nox.add(deal.totalCommitted, transferred);
+        Nox.allow(transferred, msg.sender);
         emit BidSubmitted(dealId, msg.sender, sealedBid);
     }
 
-    function repay(uint256 dealId, uint256 amount) external onlyIssuer(dealId) {
+    function repay(
+        uint256 dealId,
+        externalEuint256 encryptedAmount,
+        bytes calldata inputProof
+    ) external onlyIssuer(dealId) {
         Deal storage deal = deals[dealId];
         require(deal.state == DealState.Funded, "Not funded");
-        require(amount == deal.totalCommitted, "Amount must equal total committed");
-        require(confidentialToken.transferFrom(msg.sender, address(this), amount), "Transfer failed");
-        deal.totalRepaid = amount;
+        euint256 repaid = confidentialToken.confidentialTransferFrom(
+            msg.sender,
+            address(this),
+            encryptedAmount,
+            inputProof
+        );
+        deal.totalRepaid = Nox.add(deal.totalRepaid, repaid);
         deal.state = DealState.Repaid;
-        emit RepaymentSubmitted(dealId, amount);
+        emit RepaymentSubmitted(dealId, repaid);
         emit DealStateUpdated(dealId, DealState.Repaid);
     }
 
@@ -120,22 +134,30 @@ contract ObscuraDealRoom {
         require(deal.state == DealState.Repaid || deal.state == DealState.Claimed, "Not repaid");
         Bid storage bid = bids[dealId][msg.sender];
         require(!bid.claimed, "Already claimed");
-        require(bid.amount > 0, "No bid");
+        require(Nox.isInitialized(bid.amount), "No bid");
 
         bid.claimed = true;
-        deal.totalClaimed += bid.amount;
-        require(confidentialToken.transfer(msg.sender, bid.amount), "Transfer failed");
-        emit Claimed(dealId, msg.sender, bid.amount);
-
-        if (deal.totalClaimed == deal.totalCommitted) {
-            deal.state = DealState.Claimed;
-            emit DealStateUpdated(dealId, DealState.Claimed);
-        }
+        deal.totalClaimed = Nox.add(deal.totalClaimed, bid.amount);
+        euint256 transferred = confidentialToken.confidentialTransfer(msg.sender, bid.amount);
+        emit Claimed(dealId, msg.sender, transferred);
     }
 
-    function grantAuditorAccess(uint256 dealId, address auditor) external onlyIssuer(dealId) {
+    function grantAuditorAccess(
+        uint256 dealId,
+        address auditor,
+        address investor
+    ) external onlyIssuer(dealId) {
         auditorAccess[dealId][auditor] = true;
+        Bid storage bid = bids[dealId][investor];
+        if (Nox.isInitialized(bid.amount)) {
+            Nox.allow(bid.amount, auditor);
+        }
         emit AuditorAccessGranted(dealId, auditor);
+    }
+
+    function closeDeal(uint256 dealId) external onlyIssuer(dealId) {
+        deals[dealId].state = DealState.Claimed;
+        emit DealStateUpdated(dealId, DealState.Claimed);
     }
 
     function getDeal(uint256 dealId) external view returns (Deal memory) {

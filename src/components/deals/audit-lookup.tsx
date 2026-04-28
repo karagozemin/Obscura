@@ -7,7 +7,7 @@ import { DEAL_ROOM_ADDRESS } from "@/lib/contracts";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { formatToken } from "@/lib/format";
+import { EncryptedAmount } from "@/components/deals/encrypted-amount";
 
 export function AuditLookup() {
   const [dealId, setDealId] = useState("");
@@ -23,7 +23,7 @@ export function AuditLookup() {
     query: { enabled: !!parsedDealId && !!investor && !!DEAL_ROOM_ADDRESS }
   });
 
-  const bid = data as { sealedBid: string; amount: bigint; claimed: boolean } | undefined;
+  const bid = data as { sealedBid: string; amount: `0x${string}`; claimed: boolean } | undefined;
 
   return (
     <Card>
@@ -45,12 +45,18 @@ export function AuditLookup() {
         {bid ? (
           <div className="space-y-1">
             <div>Sealed Bid: {bid.sealedBid}</div>
-            <div>Amount: {formatToken(bid.amount)} CT</div>
+            <div className="flex items-center gap-2">
+              <span>Amount:</span>
+              <EncryptedAmount handle={bid.amount} />
+            </div>
             <div>Claimed: {bid.claimed ? "Yes" : "No"}</div>
           </div>
         ) : (
           <div>Enter details to load permissioned bid data.</div>
         )}
+      </div>
+      <div className="mt-3 text-xs text-white/60">
+        Auditor access required to decrypt. Encrypted with iExec Nox.
       </div>
     </Card>
   );

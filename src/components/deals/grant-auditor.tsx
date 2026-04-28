@@ -11,6 +11,7 @@ import { TxLink } from "@/components/tx/tx-link";
 
 export function GrantAuditor({ dealId }: { dealId: number }) {
   const [auditor, setAuditor] = useState("");
+  const [investor, setInvestor] = useState("");
   const { data: hash, writeContract, isPending, error } = useWriteContract();
   const { isLoading } = useWaitForTransactionReceipt({ hash });
 
@@ -20,6 +21,10 @@ export function GrantAuditor({ dealId }: { dealId: number }) {
         <Label>Auditor Wallet</Label>
         <Input value={auditor} onChange={(event) => setAuditor(event.target.value)} placeholder="0x..." />
       </div>
+      <div className="space-y-2">
+        <Label>Investor Wallet</Label>
+        <Input value={investor} onChange={(event) => setInvestor(event.target.value)} placeholder="0x..." />
+      </div>
       <div className="flex items-center gap-2">
         <Button
           onClick={() =>
@@ -27,7 +32,7 @@ export function GrantAuditor({ dealId }: { dealId: number }) {
               address: DEAL_ROOM_ADDRESS as `0x${string}`,
               abi: dealRoomAbi,
               functionName: "grantAuditorAccess",
-              args: [BigInt(dealId), auditor as `0x${string}`]
+              args: [BigInt(dealId), auditor as `0x${string}`, investor as `0x${string}`]
             })
           }
           disabled={isPending}

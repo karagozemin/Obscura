@@ -7,7 +7,7 @@ export default function AuditorPage() {
     <div className="space-y-10">
       <SectionHeading
         title="Auditor Dashboard"
-        description="Access is permissioned by issuers. Review deal disclosures only when granted."
+        description="Access is permissioned by issuers. Handles are encrypted with iExec Nox and require ACL access to decrypt."
       />
       <DealList mode="auditor" />
       <AuditLookup />

@@ -39,7 +39,8 @@ export const dealRoomAbi = [
     inputs: [
       { name: "dealId", type: "uint256" },
       { name: "sealedBid", type: "bytes32" },
-      { name: "amount", type: "uint256" }
+      { name: "encryptedAmount", type: "bytes32" },
+      { name: "inputProof", type: "bytes" }
     ],
     outputs: []
   },
@@ -49,7 +50,8 @@ export const dealRoomAbi = [
     stateMutability: "nonpayable",
     inputs: [
       { name: "dealId", type: "uint256" },
-      { name: "amount", type: "uint256" }
+      { name: "encryptedAmount", type: "bytes32" },
+      { name: "inputProof", type: "bytes" }
     ],
     outputs: []
   },
@@ -66,8 +68,16 @@ export const dealRoomAbi = [
     stateMutability: "nonpayable",
     inputs: [
       { name: "dealId", type: "uint256" },
-      { name: "auditor", type: "address" }
+      { name: "auditor", type: "address" },
+      { name: "investor", type: "address" }
     ],
+    outputs: []
+  },
+  {
+    type: "function",
+    name: "closeDeal",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "dealId", type: "uint256" }],
     outputs: []
   },
   {
@@ -93,9 +103,9 @@ export const dealRoomAbi = [
             ]
           },
           { name: "state", type: "uint8" },
-          { name: "totalCommitted", type: "uint256" },
-          { name: "totalRepaid", type: "uint256" },
-          { name: "totalClaimed", type: "uint256" }
+          { name: "totalCommitted", type: "bytes32" },
+          { name: "totalRepaid", type: "bytes32" },
+          { name: "totalClaimed", type: "bytes32" }
         ]
       }
     ]
@@ -121,7 +131,7 @@ export const dealRoomAbi = [
         type: "tuple",
         components: [
           { name: "sealedBid", type: "bytes32" },
-          { name: "amount", type: "uint256" },
+          { name: "amount", type: "bytes32" },
           { name: "claimed", type: "bool" }
         ]
       }
@@ -139,22 +149,22 @@ export const dealRoomAbi = [
   }
 ] as const;
 
-export const erc20Abi = [
+export const erc7984Abi = [
   {
     type: "function",
-    name: "approve",
+    name: "setOperator",
     stateMutability: "nonpayable",
     inputs: [
-      { name: "spender", type: "address" },
-      { name: "value", type: "uint256" }
+      { name: "operator", type: "address" },
+      { name: "until", type: "uint48" }
     ],
-    outputs: [{ name: "", type: "bool" }]
+    outputs: []
   },
   {
     type: "function",
-    name: "balanceOf",
+    name: "confidentialBalanceOf",
     stateMutability: "view",
     inputs: [{ name: "owner", type: "address" }],
-    outputs: [{ name: "", type: "uint256" }]
+    outputs: [{ name: "", type: "bytes32" }]
   }
 ] as const;

@@ -2,7 +2,7 @@
 
 **Confidential RWA Deal Rooms for sealed private credit funding.**
 
-Obscura Finance is a confidential deal room where investors submit sealed bids, allocations stay hidden, repayments settle onchain, and auditors verify details through permissioned disclosure. The MVP demonstrates a practical private credit funding flow with iExec Nox Confidential Tokens.
+Obscura Finance is a confidential deal room where investors submit sealed bids, allocations stay hidden, repayments settle onchain, and auditors verify details through permissioned disclosure. The MVP demonstrates a practical private credit funding flow using iExec Nox Handles and ERC-7984 Confidential Tokens.
 
 ## Why confidential RWA funding
 Private credit and RWA funding require onchain settlement, but investors cannot expose bid size, allocation, or repayment exposure publicly. Obscura Finance keeps allocations private by default and enables auditors to view sensitive details only when permissioned.
@@ -10,16 +10,24 @@ Private credit and RWA funding require onchain settlement, but investors cannot 
 ## What works end-to-end
 - Issuer creates a deal with metadata (sample metadata only).
 - Funding state progresses onchain: Open → Funding → Funded → Repaid → Claimed.
-- Investors approve confidential token transfers and submit sealed bids.
-- Bid amounts stay hidden in the UI; only the investor and authorized auditor can view their bid details.
+- Investors authorize the deal room operator and encrypt bid amounts with iExec Nox Handles.
+- Bid amounts stay encrypted onchain; only the investor and authorized auditor can decrypt.
 - Issuer repays onchain, investors claim repayment.
 - Auditor access is permissioned onchain.
 - Explorer links for every transaction.
 
 ## iExec Nox usage
-- Confidential funding is handled via a Confidential Token deployed through iExec Nox.
-- The app reads balances and transfers confidential tokens for bids and repayment.
-- Auditor disclosure is enforced at the contract level with permissioned access checks.
+- **Encrypted bids**: `BidForm` uses `@iexec-nox/handle` to encrypt amounts and send handles + proofs onchain.
+- **ERC-7984 token**: `ObscuraDealRoom` uses `IERC7984` confidential transfers and operator authorization.
+- **Nox types**: `euint256` handles are stored in contract state; plaintext amounts are never stored or emitted.
+- **Auditor access**: issuer grants ACL access via `Nox.allow` for specific bid handles.
+
+Key files:
+- `contracts/ObscuraDealRoom.sol`
+- `src/components/deals/bid-form.tsx`
+- `src/components/deals/repay-form.tsx`
+- `src/components/deals/encrypted-amount.tsx`
+- `src/lib/nox-handle.ts`
 
 ## Tech stack
 - Next.js + TypeScript + Tailwind CSS
@@ -73,10 +81,10 @@ npm run dev
 2. Ensure you have a Confidential Token on Arbitrum Sepolia.
 3. Issuer creates a deal.
 4. Issuer opens funding.
-5. Investor approves confidential token and submits sealed bid.
-6. Issuer marks the deal funded, then repays.
+5. Investor authorizes operator, encrypts amount, and submits sealed bid.
+6. Issuer marks the deal funded, encrypts repayment, then repays.
 7. Investor claims repayment.
-8. Issuer grants auditor access.
+8. Issuer grants auditor access for a specific investor.
 9. Auditor views permissioned disclosure via Auditor Lookup.
 
 ## Contract addresses
@@ -88,9 +96,9 @@ npm run dev
 - **Real onchain state:** deals, bids, repayments, claims, transaction hashes.
 
 ## Known limitations
-- This MVP treats confidential token transfers as standard ERC-20 transfers; use an iExec Confidential Token deployment on Arbitrum Sepolia.
+- This MVP assumes an existing ERC-7984 Confidential Token deployment on Arbitrum Sepolia.
 - Bid commitment generation is left to the investor (use a hash of offchain terms).
-- No advanced allocation logic or interest schedules yet.
+- Deal closure is manual (issuer closes after claims) since totals remain encrypted.
 
 ## License
 MIT
