@@ -7,7 +7,8 @@ const rpcUrl =
 
 export const wagmiConfig = createConfig({
   chains: [arbitrumSepolia],
-  connectors: [injected()],
+  connectors: [injected({ target: "metaMask" })],
+  multiInjectedProviderDiscovery: false,
   transports: {
     [arbitrumSepolia.id]: http(rpcUrl)
   }

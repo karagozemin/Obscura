@@ -1,21 +1,21 @@
 "use client";
 
 import { useAccount, useConnect, useDisconnect } from "wagmi";
-import { injected } from "wagmi/connectors";
 import { Button } from "@/components/ui/button";
 
 export function WalletButton() {
   const { address, isConnected } = useAccount();
-  const { connect, isPending } = useConnect();
+  const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
+  const connector = connectors[0];
 
   if (!isConnected) {
     return (
       <Button
-        onClick={() => connect({ connector: injected() })}
-        disabled={isPending}
+        onClick={() => connector && connect({ connector })}
+        disabled={isPending || !connector}
       >
-        {isPending ? "Connecting" : "Connect Wallet"}
+        {!connector ? "Wallet Unavailable" : isPending ? "Connecting" : "Connect Wallet"}
       </Button>
     );
   }
