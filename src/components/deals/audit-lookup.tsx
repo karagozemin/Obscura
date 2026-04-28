@@ -30,6 +30,9 @@ export function AuditLookup() {
       <p className="text-xs font-semibold uppercase tracking-widest text-gold">Auditor Lookup</p>
       <h3 className="mt-1 text-lg font-semibold text-text-1">Permissioned Bid Disclosure</h3>
       <p className="mt-1 text-sm text-text-2">Enter a deal ID and investor address to view ACL-permissioned bid details.</p>
+      <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-warning/30 bg-warning/10 px-3 py-1.5 text-xs font-medium text-warning">
+        Lookup works only when connected with the authorized auditor wallet.
+      </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
