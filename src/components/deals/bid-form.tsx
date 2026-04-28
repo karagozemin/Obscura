@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount, useChainId, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useChainId, usePublicClient, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { arbitrumSepolia } from "wagmi/chains";
 import { dealRoomAbi, erc7984Abi, erc20Abi } from "@/lib/abi";
 import { DEAL_ROOM_ADDRESS, CONFIDENTIAL_TOKEN_ADDRESS } from "@/lib/contracts";
@@ -22,6 +22,7 @@ export function BidForm({ dealId }: { dealId: number }) {
   const { isConnected } = useAccount();
   const chainId = useChainId();
   const isCorrectChain = chainId === arbitrumSepolia.id;
+  const publicClient = usePublicClient();
   const handleClient = useHandleClient();
 
   const { data: underlyingAddress } = useReadContract({
@@ -56,14 +57,25 @@ export function BidForm({ dealId }: { dealId: number }) {
 
   const disabled = !DEAL_ROOM_ADDRESS || !CONFIDENTIAL_TOKEN_ADDRESS;
 
-  const handleOperator = () => {
+  const getFees = async () => {
+    if (!publicClient) return {};
+    const fees = await publicClient.estimateFeesPerGas();
+    return {
+      ...(fees.maxFeePerGas ? { maxFeePerGas: fees.maxFeePerGas } : {}),
+      ...(fees.maxPriorityFeePerGas ? { maxPriorityFeePerGas: fees.maxPriorityFeePerGas } : {})
+    };
+  };
+
+  const handleOperator = async () => {
     if (!DEAL_ROOM_ADDRESS) return;
     const until = Math.floor(Date.now() / 1000) + 24 * 60 * 60;
+    const fees = await getFees();
     setOperator({
       address: CONFIDENTIAL_TOKEN_ADDRESS as `0x${string}`,
       abi: erc7984Abi,
       functionName: "setOperator",
-      args: [DEAL_ROOM_ADDRESS as `0x${string}`, until]
+      args: [DEAL_ROOM_ADDRESS as `0x${string}`, until],
+      ...fees
     });
   };
 
@@ -102,8 +114,9 @@ export function BidForm({ dealId }: { dealId: number }) {
     }
   };
 
-  const handleBid = () => {
+  const handleBid = async () => {
     if (!encryptedHandle || !handleProof || !sealedBid) return;
+    const fees = await getFees();
     submitBid({
       address: DEAL_ROOM_ADDRESS as `0x${string}`,
       abi: dealRoomAbi,
@@ -113,7 +126,8 @@ export function BidForm({ dealId }: { dealId: number }) {
         sealedBid as `0x${string}`,
         encryptedHandle as `0x${string}`,
         handleProof as `0x${string}`
-      ]
+      ],
+      ...fees
     });
   };
 
