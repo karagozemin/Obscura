@@ -88,14 +88,16 @@ npm run dev
 9. Auditor views permissioned disclosure via Auditor Lookup.
 
 ## Contract addresses
-- Obscura Deal Room (Arbitrum Sepolia): `TBD`
-- Confidential Token (Arbitrum Sepolia): `TBD`
+- Obscura Deal Room (Arbitrum Sepolia): `0xFbB8F312b4d64df7a75bC1e1A50EE270cC8f8CA3`
+- Confidential Token (ERC-7984 cUSDC, Arbitrum Sepolia): `0x1ccec6bc60db15e4055d43dc2531bb7d4e5b808e`
+- Underlying USDC ERC-20 (Arbitrum Sepolia): `0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d`
 
 ## Sample metadata vs real state
 - **Sample metadata only:** title, category, description, document hash.
 - **Real onchain state:** deals, bids, repayments, claims, transaction hashes.
 
 ## Known limitations
+- Obscura Finance requires a real ERC-7984 Confidential Token address. A mock token is intentionally not provided because the core privacy flow must be backed by real confidential token primitives.
 - This MVP assumes an existing ERC-7984 Confidential Token deployment on Arbitrum Sepolia.
 - Bid commitment generation is left to the investor (use a hash of offchain terms).
 - Deal closure is manual (issuer closes after claims) since totals remain encrypted.

@@ -1,4 +1,6 @@
-import { ethers } from "hardhat";
+import hardhat from "hardhat";
+
+const { ethers } = hardhat;
 
 async function main() {
   const confidentialToken = process.env.CONFIDENTIAL_TOKEN_ADDRESS;
