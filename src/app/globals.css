@@ -4,15 +4,15 @@
 
 :root {
   color-scheme: dark;
-  --purple: #8B5CF6;
-  --purple-bright: #A78BFA;
+  --purple: #7C6FF0;
+  --purple-bright: #9F95FF;
   --bg: #06050D;
-  --surface: #09071A;
-  --border: #1E1A3A;
+  --surface: #090B16;
+  --border: #232744;
 }
 
 * {
-  border-color: #1E1A3A;
+  border-color: #232744;
   box-sizing: border-box;
 }
 
@@ -31,38 +31,38 @@ body {
 
 /* Premium scrollbar */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #09071A; }
-::-webkit-scrollbar-thumb { background: #2A2550; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #6D28D9; }
+::-webkit-scrollbar-track { background: #090B16; }
+::-webkit-scrollbar-thumb { background: #2D3353; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #5B4FD8; }
 
 /* Selection */
 ::selection {
-  background: rgba(139, 92, 246, 0.25);
-  color: #A78BFA;
+  background: rgba(124, 111, 240, 0.22);
+  color: #9F95FF;
 }
 
 /* Focus rings */
 :focus-visible {
-  outline: 2px solid rgba(139, 92, 246, 0.5);
+  outline: 2px solid rgba(124, 111, 240, 0.45);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 @layer utilities {
   .text-purple-gradient {
-    background: linear-gradient(135deg, #8B5CF6 0%, #C4B5FD 50%, #8B5CF6 100%);
+    background: linear-gradient(135deg, #7C6FF0 0%, #B7B0FF 50%, #7C6FF0 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .bg-dot-pattern {
-    background-image: radial-gradient(circle, rgba(42, 37, 80, 0.55) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(45, 51, 83, 0.5) 1px, transparent 1px);
     background-size: 28px 28px;
   }
 
   .glass {
-    background: rgba(14, 12, 34, 0.7);
+    background: rgba(15, 19, 38, 0.7);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
@@ -74,10 +74,10 @@ body {
   }
 
   .border-purple-subtle { border-color: rgba(139, 92, 246, 0.2); }
-  .border-purple        { border-color: rgba(139, 92, 246, 0.45); }
+  .border-purple        { border-color: rgba(124, 111, 240, 0.4); }
 
   .shadow-purple-glow {
-    box-shadow: 0 0 60px rgba(109, 40, 217, 0.15), 0 0 120px rgba(139, 92, 246, 0.06);
+    box-shadow: 0 0 60px rgba(91, 79, 216, 0.12), 0 0 120px rgba(124, 111, 240, 0.05);
   }
 
   .card-shine {
@@ -88,7 +88,7 @@ body {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(139,92,246,0.04) 0%, transparent 60%);
+    background: linear-gradient(135deg, rgba(124,111,240,0.035) 0%, transparent 60%);
     pointer-events: none;
   }
 }
