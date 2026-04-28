@@ -66,7 +66,7 @@ export default function LandingPage() {
         </div>
 
         {/* Content sits above background */}
-        <div className="relative z-10 space-y-8 rounded-3xl bg-bg/75 px-6 pb-16 pt-20 backdrop-blur-md">
+        <div className="relative z-10 space-y-8 rounded-3xl bg-bg/75 px-6 pb-12 pt-16 backdrop-blur-md">
           <div className="inline-flex items-center gap-2 rounded-full border border-purple/25 bg-purple-subtle/80 px-4 py-1.5 text-xs font-medium text-purple-bright backdrop-blur-sm">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-purple" />
             Confidential RWA Protocol · Arbitrum Sepolia
@@ -81,7 +81,7 @@ export default function LandingPage() {
               className="h-45 w-45 object-contain"
               priority
             />
-            <h1 className="text-5xl font-semibold leading-[1.12] tracking-tight text-text-1 md:text-6xl lg:text-7xl">
+            <h1 className="text-4xl font-semibold leading-[1.12] tracking-tight text-text-1 md:text-5xl lg:text-6xl">
               Private credit,
               <br />
               <span className="text-purple-gradient">sealed onchain.</span>
