@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useAccount, useReadContract, useReadContracts, useWriteContract } from "wagmi";
+import { useAccount, usePublicClient, useReadContract, useReadContracts, useWriteContract } from "wagmi";
 import { dealRoomAbi } from "@/lib/abi";
 import { DEAL_ROOM_ADDRESS } from "@/lib/contracts";
 import { Card } from "@/components/ui/card";
@@ -20,6 +20,7 @@ type Mode = "issuer" | "investor" | "auditor";
 
 export function DealList({ mode }: { mode: Mode }) {
   const { address } = useAccount();
+  const publicClient = usePublicClient();
   const { data: actionHash, writeContract, isPending: actionPending, error: actionError } =
     useWriteContract();
   const hasAddress = Boolean(DEAL_ROOM_ADDRESS);
@@ -150,14 +151,21 @@ export function DealList({ mode }: { mode: Mode }) {
                 <div className="flex flex-wrap gap-2">
                   <Button
                     variant="outline"
-                    onClick={() =>
+                    onClick={async () => {
+                      const fees = publicClient
+                        ? await publicClient.estimateFeesPerGas()
+                        : null;
                       writeContract({
                         address: dealRoomAddress,
                         abi: dealRoomAbi,
                         functionName: "setFundingOpen",
-                        args: [BigInt(index)]
-                      })
-                    }
+                        args: [BigInt(index)],
+                        ...(fees?.maxFeePerGas ? { maxFeePerGas: fees.maxFeePerGas } : {}),
+                        ...(fees?.maxPriorityFeePerGas
+                          ? { maxPriorityFeePerGas: fees.maxPriorityFeePerGas }
+                          : {})
+                      });
+                    }}
                     disabled={actionPending}
                   >
                     {actionPending ? "Submitting" : "Open Funding"}
