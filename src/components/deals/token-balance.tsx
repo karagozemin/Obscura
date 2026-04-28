@@ -19,67 +19,55 @@ export function TokenBalance() {
     abi: erc7984Abi,
     functionName: "confidentialBalanceOf",
     args: address ? [address] : undefined,
-    query: { enabled: !!address && !!CONFIDENTIAL_TOKEN_ADDRESS }
+    query: { enabled: !!address && !!CONFIDENTIAL_TOKEN_ADDRESS },
   });
 
   const { data: underlyingAddress } = useReadContract({
     address: CONFIDENTIAL_TOKEN_ADDRESS as `0x${string}`,
     abi: erc7984Abi,
     functionName: "underlying",
-    query: { enabled: !!CONFIDENTIAL_TOKEN_ADDRESS }
+    query: { enabled: !!CONFIDENTIAL_TOKEN_ADDRESS },
   });
 
   const { data: decimals } = useReadContract({
     address: underlyingAddress as `0x${string}`,
     abi: erc20Abi,
     functionName: "decimals",
-    query: { enabled: !!underlyingAddress }
+    query: { enabled: !!underlyingAddress },
   });
 
   const tokenDecimals = typeof decimals === "number" ? decimals : 18;
 
   useEffect(() => {
     const handle = data as `0x${string}` | undefined;
-    if (!handleClient || !handle) {
-      setDecrypted(null);
-      return;
-    }
+    if (!handleClient || !handle) { setDecrypted(null); return; }
     let mounted = true;
     setIsDecrypting(true);
-    handleClient
-      .decrypt(handle)
-      .then(({ value }) => {
-        if (mounted) {
-          setDecrypted(value as bigint);
-        }
-      })
-      .finally(() => {
-        if (mounted) {
-          setIsDecrypting(false);
-        }
-      });
-
-    return () => {
-      mounted = false;
-    };
+    handleClient.decrypt(handle)
+      .then(({ value }) => { if (mounted) setDecrypted(value as bigint); })
+      .finally(() => { if (mounted) setIsDecrypting(false); });
+    return () => { mounted = false; };
   }, [data, handleClient]);
 
   return (
     <Card>
-      <h3 className="text-lg font-semibold">Confidential Token Balance</h3>
-      <p className="mt-2 text-sm text-white/70">
-        Encrypted with iExec Nox. Amount hidden onchain.
-      </p>
-      <div className="mt-4 text-2xl font-semibold">
-        {isDecrypting ? "Decrypting..." : formatToken(decrypted ?? undefined, tokenDecimals)} CT
+      <p className="text-xs font-semibold uppercase tracking-widest text-gold">Confidential Balance</p>
+      <div className="mt-4 flex items-end gap-2">
+        <span className="text-3xl font-semibold tabular-nums text-text-1">
+          {isDecrypting ? (
+            <span className="inline-block h-8 w-24 animate-pulse rounded-lg bg-surface-2" />
+          ) : (
+            formatToken(decrypted ?? undefined, tokenDecimals)
+          )}
+        </span>
+        <span className="mb-0.5 text-sm font-medium text-gold">cUSDC</span>
       </div>
+      <p className="mt-2 text-xs text-text-3">Encrypted with iExec Nox · decrypted locally</p>
       {!handleClient && (
-        <div className="mt-2 text-xs text-white/50">Connect wallet to decrypt balance.</div>
+        <p className="mt-2 text-xs text-warning">Connect wallet to decrypt balance.</p>
       )}
       {!CONFIDENTIAL_TOKEN_ADDRESS && (
-        <div className="mt-2 text-xs text-white/50">
-          Configure `NEXT_PUBLIC_CONFIDENTIAL_TOKEN_ADDRESS` to load balances.
-        </div>
+        <p className="mt-2 text-xs text-danger">Configure NEXT_PUBLIC_CONFIDENTIAL_TOKEN_ADDRESS.</p>
       )}
     </Card>
   );

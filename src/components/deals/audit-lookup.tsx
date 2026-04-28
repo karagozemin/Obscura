@@ -20,44 +20,52 @@ export function AuditLookup() {
     abi: dealRoomAbi,
     functionName: "getBidForInvestor",
     args: parsedDealId !== undefined && investor ? [parsedDealId, investor as `0x${string}`] : undefined,
-    query: { enabled: !!parsedDealId && !!investor && !!DEAL_ROOM_ADDRESS }
+    query: { enabled: !!parsedDealId && !!investor && !!DEAL_ROOM_ADDRESS },
   });
 
   const bid = data as { sealedBid: string; amount: `0x${string}`; claimed: boolean } | undefined;
 
   return (
     <Card>
-      <h3 className="text-lg font-semibold">Auditor Lookup</h3>
-      <p className="mt-1 text-sm text-white/70">
-        Enter a deal and investor wallet to view permissioned bid details.
-      </p>
-      <div className="mt-4 grid gap-3 md:grid-cols-2">
+      <p className="text-xs font-semibold uppercase tracking-widest text-gold">Auditor Lookup</p>
+      <h3 className="mt-1 text-lg font-semibold text-text-1">Permissioned Bid Disclosure</h3>
+      <p className="mt-1 text-sm text-text-2">Enter a deal ID and investor address to view ACL-permissioned bid details.</p>
+
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <Label>Deal ID</Label>
-          <Input value={dealId} onChange={(event) => setDealId(event.target.value)} placeholder="0" />
+          <Input value={dealId} onChange={(e) => setDealId(e.target.value)} placeholder="0" />
         </div>
         <div className="space-y-2">
           <Label>Investor Address</Label>
-          <Input value={investor} onChange={(event) => setInvestor(event.target.value)} placeholder="0x..." />
+          <Input value={investor} onChange={(e) => setInvestor(e.target.value)} placeholder="0x…" />
         </div>
       </div>
-      <div className="mt-4 text-sm text-white/70">
-        {bid ? (
-          <div className="space-y-1">
-            <div>Sealed Bid: {bid.sealedBid}</div>
-            <div className="flex items-center gap-2">
-              <span>Amount:</span>
+
+      {bid ? (
+        <div className="mt-5 rounded-xl border border-border bg-surface p-4 space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gold">Bid Data</p>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-text-2">Sealed Bid</span>
+              <span className="font-mono text-xs text-text-1 max-w-[220px] truncate">{bid.sealedBid}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-text-2">Encrypted Amount</span>
               <EncryptedAmount handle={bid.amount} />
             </div>
-            <div>Claimed: {bid.claimed ? "Yes" : "No"}</div>
+            <div className="flex items-center justify-between">
+              <span className="text-text-2">Claimed</span>
+              <span className={bid.claimed ? "text-success" : "text-text-3"}>{bid.claimed ? "✓ Yes" : "No"}</span>
+            </div>
           </div>
-        ) : (
-          <div>Enter details to load permissioned bid data.</div>
-        )}
-      </div>
-      <div className="mt-3 text-xs text-white/60">
-        Auditor access required to decrypt. Encrypted with iExec Nox.
-      </div>
+        </div>
+      ) : (
+        <div className="mt-5 rounded-xl border border-border bg-surface px-4 py-6 text-center text-sm text-text-3">
+          Enter deal ID and investor address to load permissioned bid data.
+        </div>
+      )}
+      <p className="mt-3 text-xs text-text-3">ACL access required · Encrypted with iExec Nox</p>
     </Card>
   );
 }

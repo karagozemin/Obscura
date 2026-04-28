@@ -5,26 +5,29 @@ import { WrapForm } from "@/components/deals/wrap-form";
 export function WrapInstructions() {
   return (
     <Card>
-      <h3 className="text-lg font-semibold">Wrap Tokens with iExec Nox</h3>
-      <p className="mt-2 text-sm text-white/70">
-        Wrap your ERC-20 USDC into ERC-7984 Confidential Token (cUSDC) to submit encrypted bids or repay deals. Tokens are exchanged 1:1.
+      <p className="text-xs font-semibold uppercase tracking-widest text-gold">Wrap Tokens</p>
+      <h3 className="mt-1 text-lg font-semibold text-text-1">USDC → cUSDC</h3>
+      <p className="mt-1 text-sm text-text-2">
+        Convert ERC-20 USDC into ERC-7984 Confidential Tokens (1:1). Required for encrypted bids and repayments.
       </p>
-      <p className="mt-2 text-sm text-white/50">
+      <p className="mt-2 text-xs text-text-3">
         Need testnet USDC?{" "}
         <a
           href="https://faucet.circle.com/"
           target="_blank"
           rel="noopener noreferrer"
-          className="underline text-white/70 hover:text-white"
+          className="text-gold underline-offset-2 hover:underline"
         >
-          Get it from Circle Faucet
-        </a>{" "}
-        — select USDC on Arbitrum Sepolia.
+          Circle Faucet ↗
+        </a>
+        {" "}— select USDC on Arbitrum Sepolia.
       </p>
-      <div className="mt-3 text-xs text-white/60">
-        Confidential Token: {CONFIDENTIAL_TOKEN_ADDRESS || "Configure in env"}
-      </div>
-      <div className="mt-4">
+      {CONFIDENTIAL_TOKEN_ADDRESS && (
+        <p className="mt-1 font-mono text-xs text-text-3 truncate">
+          cUSDC: {CONFIDENTIAL_TOKEN_ADDRESS}
+        </p>
+      )}
+      <div className="mt-5">
         <WrapForm />
       </div>
     </Card>

@@ -1,52 +1,69 @@
-import { Card } from "@/components/ui/card";
 import { SectionHeading } from "@/components/section-heading";
 import Link from "next/link";
 import { buttonStyles } from "@/components/ui/button";
 
 const steps = [
-  "Connect wallet",
-  "Mint or use test token",
-  "Wrap into confidential token",
-  "Create deal",
-  "Submit sealed bid",
-  "Repay",
-  "Claim repayment",
-  "Grant auditor access",
-  "View disclosure as auditor"
+  { role: "Any",      action: "Connect your wallet to Arbitrum Sepolia" },
+  { role: "Any",      action: "Get testnet USDC from Circle Faucet" },
+  { role: "Any",      action: "Wrap USDC into cUSDC via the Wrap panel" },
+  { role: "Issuer",   action: "Create a private credit deal with metadata" },
+  { role: "Issuer",   action: "Open funding round → deal moves to Funding state" },
+  { role: "Investor", action: "Authorize the deal room as operator" },
+  { role: "Investor", action: "Encrypt bid amount with iExec Nox" },
+  { role: "Investor", action: "Submit sealed bid onchain" },
+  { role: "Issuer",   action: "Mark deal Funded → close the funding window" },
+  { role: "Issuer",   action: "Authorize operator, encrypt repayment amount, and repay" },
+  { role: "Investor", action: "Claim proportional repayment onchain" },
+  { role: "Issuer",   action: "Grant auditor ACL access for a specific investor bid" },
+  { role: "Auditor",  action: "View and decrypt permissioned bid disclosure" },
 ];
+
+const roleColor: Record<string, string> = {
+  Any:      "border-border bg-surface-2 text-text-2",
+  Issuer:   "border-purple/30 bg-purple-subtle text-gold",
+  Investor: "border-success/25 bg-success-bg text-success",
+  Auditor:  "border-blue-500/25 bg-blue-950/40 text-blue-400",
+};
 
 export default function DemoPage() {
   return (
     <div className="space-y-10">
       <SectionHeading
-        title="Judge Demo Mode"
-        description="Guided walkthrough of the real confidential funding flow. Each step requires a real onchain action."
+        tag="Demo Mode"
+        title="Guided Confidential Funding Flow"
+        description="Every step triggers a real onchain transaction. Deal state, encrypted bids, and repayments are pulled live — nothing is simulated."
       />
-      <div className="grid gap-4">
-        {steps.map((step, index) => (
-          <Card key={step}>
-            <div className="flex items-center justify-between">
-              <p className="font-semibold">Step {index + 1}</p>
-              <p className="text-white/70">{step}</p>
+
+      <div className="space-y-3">
+        {steps.map((step, i) => (
+          <div
+            key={i}
+            className="flex items-start gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-border-2"
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-purple/30 bg-purple-subtle text-xs font-bold text-gold">
+              {String(i + 1).padStart(2, "0")}
             </div>
-          </Card>
+            <div className="flex flex-1 items-center justify-between gap-4">
+              <p className="text-sm text-text-1">{step.action}</p>
+              <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-medium ${roleColor[step.role]}`}>
+                {step.role}
+              </span>
+            </div>
+          </div>
         ))}
       </div>
-      <div className="flex flex-wrap gap-3">
-        <Link href="/issuer" className={buttonStyles({ variant: "outline" })}>
-          Go to Issuer Flow
-        </Link>
-        <Link href="/investor" className={buttonStyles({ variant: "outline" })}>
-          Go to Investor Flow
-        </Link>
-        <Link href="/auditor" className={buttonStyles({ variant: "outline" })}>
-          Go to Auditor Flow
-        </Link>
+
+      <div className="rounded-2xl border border-border bg-card p-6">
+        <p className="text-xs font-semibold uppercase tracking-widest text-gold mb-4">Jump to a role</p>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/issuer"   className={buttonStyles({ variant: "outline" })}>Issuer Dashboard</Link>
+          <Link href="/investor" className={buttonStyles({ variant: "outline" })}>Investor Dashboard</Link>
+          <Link href="/auditor"  className={buttonStyles({ variant: "outline" })}>Auditor Dashboard</Link>
+        </div>
+        <p className="mt-4 text-xs text-text-3">
+          Deal state, encrypted amounts, and transaction hashes are always sourced directly from the deployed contract — they cannot be faked.
+        </p>
       </div>
-      <p className="text-sm text-white/60">
-        Demo mode only guides the flow. Deal state, bids, repayments, and claims are pulled from
-        the live contracts and cannot be faked.
-      </p>
     </div>
   );
 }

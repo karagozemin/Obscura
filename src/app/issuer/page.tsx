@@ -8,11 +8,14 @@ export default function IssuerPage() {
   return (
     <div className="space-y-10">
       <SectionHeading
-        title="Issuer Dashboard"
-        description="Create and manage confidential RWA funding rounds. Live deal state loads from onchain data once contracts are deployed."
+        tag="Issuer Dashboard"
+        title="Manage Your Private Credit Rounds"
+        description="Create deals, open funding rounds, repay investors, and grant auditor access — all onchain with encrypted amounts."
       />
-      <TokenBalance />
-      <WrapInstructions />
+      <div className="grid gap-6 md:grid-cols-2">
+        <TokenBalance />
+        <WrapInstructions />
+      </div>
       <CreateDealForm />
       <DealList mode="issuer" />
     </div>
