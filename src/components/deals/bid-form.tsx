@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { dealRoomAbi, erc7984Abi } from "@/lib/abi";
+import { useAccount, useChainId, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { arbitrumSepolia } from "wagmi/chains";
+import { dealRoomAbi, erc7984Abi, erc20Abi } from "@/lib/abi";
 import { DEAL_ROOM_ADDRESS, CONFIDENTIAL_TOKEN_ADDRESS } from "@/lib/contracts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +20,23 @@ export function BidForm({ dealId }: { dealId: number }) {
   const [handleProof, setHandleProof] = useState<string | null>(null);
   const [encryptError, setEncryptError] = useState<string | null>(null);
   const { isConnected } = useAccount();
+  const chainId = useChainId();
+  const isCorrectChain = chainId === arbitrumSepolia.id;
   const handleClient = useHandleClient();
+
+  const { data: underlyingAddress } = useReadContract({
+    address: CONFIDENTIAL_TOKEN_ADDRESS as `0x${string}`,
+    abi: erc7984Abi,
+    functionName: "underlying",
+    query: { enabled: !!CONFIDENTIAL_TOKEN_ADDRESS }
+  });
+  const { data: decimals } = useReadContract({
+    address: underlyingAddress as `0x${string}`,
+    abi: erc20Abi,
+    functionName: "decimals",
+    query: { enabled: !!underlyingAddress }
+  });
+  const tokenDecimals = typeof decimals === "number" ? decimals : 18;
 
   const {
     data: approveHash,
@@ -60,13 +77,17 @@ export function BidForm({ dealId }: { dealId: number }) {
       setEncryptError("Connect wallet on Arbitrum Sepolia to initialize encryption.");
       return;
     }
+    if (!isCorrectChain) {
+      setEncryptError("Switch MetaMask to Arbitrum Sepolia.");
+      return;
+    }
     if (!DEAL_ROOM_ADDRESS) {
       setEncryptError("Deal room address not configured.");
       return;
     }
     setIsEncrypting(true);
     try {
-      const value = parseUnits(amount, 18);
+      const value = parseUnits(amount, tokenDecimals);
       const { handle, handleProof } = await handleClient.encryptInput(
         value,
         "uint256",
@@ -115,7 +136,7 @@ export function BidForm({ dealId }: { dealId: number }) {
         <Button
           variant="outline"
           onClick={handleEncrypt}
-          disabled={disabled || !handleClient || isEncrypting}
+          disabled={disabled || !handleClient || !isCorrectChain || isEncrypting}
         >
           {isEncrypting ? "Encrypting" : "Encrypt Amount"}
         </Button>
@@ -131,6 +152,8 @@ export function BidForm({ dealId }: { dealId: number }) {
       </div>
       {!isConnected ? (
         <div className="text-xs text-amber-300">Connect wallet to enable encryption.</div>
+      ) : !isCorrectChain ? (
+        <div className="text-xs text-amber-300">Switch to Arbitrum Sepolia to encrypt.</div>
       ) : null}
       {encryptedHandle ? (
         <div className="text-xs text-white/50">Handle: {encryptedHandle}</div>

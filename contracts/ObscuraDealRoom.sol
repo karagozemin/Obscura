@@ -96,12 +96,12 @@ contract ObscuraDealRoom {
         Bid storage bid = bids[dealId][msg.sender];
         require(!Nox.isInitialized(bid.amount), "Bid exists");
 
-        Nox.fromExternal(encryptedAmount, inputProof);
+        euint256 amount = Nox.fromExternal(encryptedAmount, inputProof);
+        Nox.allow(amount, address(confidentialToken));
         euint256 transferred = confidentialToken.confidentialTransferFrom(
             msg.sender,
             address(this),
-            encryptedAmount,
-            inputProof
+            amount
         );
 
         bids[dealId][msg.sender] = Bid({sealedBid: sealedBid, amount: transferred, claimed: false});
@@ -117,11 +117,12 @@ contract ObscuraDealRoom {
     ) external onlyIssuer(dealId) {
         Deal storage deal = deals[dealId];
         require(deal.state == DealState.Funded, "Not funded");
+        euint256 amount = Nox.fromExternal(encryptedAmount, inputProof);
+        Nox.allow(amount, address(confidentialToken));
         euint256 repaid = confidentialToken.confidentialTransferFrom(
             msg.sender,
             address(this),
-            encryptedAmount,
-            inputProof
+            amount
         );
         deal.totalRepaid = Nox.add(deal.totalRepaid, repaid);
         deal.state = DealState.Repaid;

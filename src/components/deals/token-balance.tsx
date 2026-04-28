@@ -2,7 +2,7 @@
 
 import { useAccount, useReadContract } from "wagmi";
 import { CONFIDENTIAL_TOKEN_ADDRESS } from "@/lib/contracts";
-import { erc7984Abi } from "@/lib/abi";
+import { erc7984Abi, erc20Abi } from "@/lib/abi";
 import { Card } from "@/components/ui/card";
 import { formatToken } from "@/lib/format";
 import { useHandleClient } from "@/lib/nox-handle";
@@ -21,6 +21,22 @@ export function TokenBalance() {
     args: address ? [address] : undefined,
     query: { enabled: !!address && !!CONFIDENTIAL_TOKEN_ADDRESS }
   });
+
+  const { data: underlyingAddress } = useReadContract({
+    address: CONFIDENTIAL_TOKEN_ADDRESS as `0x${string}`,
+    abi: erc7984Abi,
+    functionName: "underlying",
+    query: { enabled: !!CONFIDENTIAL_TOKEN_ADDRESS }
+  });
+
+  const { data: decimals } = useReadContract({
+    address: underlyingAddress as `0x${string}`,
+    abi: erc20Abi,
+    functionName: "decimals",
+    query: { enabled: !!underlyingAddress }
+  });
+
+  const tokenDecimals = typeof decimals === "number" ? decimals : 18;
 
   useEffect(() => {
     const handle = data as `0x${string}` | undefined;
@@ -55,7 +71,7 @@ export function TokenBalance() {
         Encrypted with iExec Nox. Amount hidden onchain.
       </p>
       <div className="mt-4 text-2xl font-semibold">
-        {isDecrypting ? "Decrypting..." : formatToken(decrypted ?? undefined)} CT
+        {isDecrypting ? "Decrypting..." : formatToken(decrypted ?? undefined, tokenDecimals)} CT
       </div>
       {!handleClient && (
         <div className="mt-2 text-xs text-white/50">Connect wallet to decrypt balance.</div>

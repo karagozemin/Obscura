@@ -125,6 +125,9 @@ export function DealList({ mode }: { mode: Mode }) {
           | { sealedBid: string; amount: `0x${string}`; claimed: boolean }
           | undefined;
 
+        const isIssuer =
+          !!address && deal.issuer.toLowerCase() === address.toLowerCase();
+
         return (
           <Card key={`deal-${index}`}>
             <div className="flex flex-wrap items-start justify-between gap-4">
@@ -139,6 +142,7 @@ export function DealList({ mode }: { mode: Mode }) {
             <div className="mt-4 grid gap-2 text-xs text-white/60 md:grid-cols-2">
               <div>Document Hash: {deal.metadata.documentHash}</div>
               <div>Maturity: {new Date(Number(deal.metadata.maturityDate) * 1000).toLocaleDateString()}</div>
+              <div>Issuer: {deal.issuer}</div>
               <div>Total Committed: Encrypted</div>
               <div>Total Repaid: Encrypted</div>
             </div>
@@ -166,7 +170,7 @@ export function DealList({ mode }: { mode: Mode }) {
                           : {})
                       });
                     }}
-                    disabled={actionPending}
+                    disabled={actionPending || !isIssuer}
                   >
                     {actionPending ? "Submitting" : "Open Funding"}
                   </Button>
@@ -187,7 +191,7 @@ export function DealList({ mode }: { mode: Mode }) {
                           : {})
                       });
                     }}
-                    disabled={actionPending}
+                    disabled={actionPending || !isIssuer}
                   >
                     {actionPending ? "Submitting" : "Mark Funded"}
                   </Button>
@@ -208,16 +212,21 @@ export function DealList({ mode }: { mode: Mode }) {
                           : {})
                       });
                     }}
-                    disabled={actionPending}
+                    disabled={actionPending || !isIssuer}
                   >
                     {actionPending ? "Submitting" : "Close Deal"}
                   </Button>
                   <TxLink hash={actionHash} />
                 </div>
+                {!isIssuer ? (
+                  <div className="text-xs text-amber-300">
+                    Repay/issuer actions require the deal issuer wallet.
+                  </div>
+                ) : null}
                 {actionError ? (
                   <div className="text-xs text-red-300">{actionError.message}</div>
                 ) : null}
-                <RepayForm dealId={index} />
+                <RepayForm dealId={index} isIssuer={isIssuer} />
                 <GrantAuditor dealId={index} />
               </div>
             ) : null}
