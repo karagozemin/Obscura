@@ -1,4 +1,4 @@
-![Obscura Finance](./public/obscura-readme-logo.png)
+<img src="./public/obscura-readme-logo.png" alt="Obscura Finance" width="200" />
 
 # Obscura Finance
 
