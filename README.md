@@ -1,4 +1,6 @@
-<img src="./public/obscura-readme-logo.png" alt="Obscura Finance" width="200" />
+<p align="center">
+	<img src="./public/obscura-readme-logo.png" alt="Obscura Finance" width="200" />
+</p>
 
 # Obscura Finance
 
