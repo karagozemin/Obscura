@@ -19,6 +19,8 @@ Obscura Finance is a confidential deal room where investors submit sealed bids, 
 
 The commodity Obscura produces: **verifiable, private credit commitments settled onchain** — the same workflow that today happens via emails, spreadsheets, and lawyers, executed transparently but confidentially on Arbitrum.
 
+For full technical documentation — contract graph, access control matrix, encryption model, state machine, and frontend architecture — see **[ARCHITECTURE.md](ARCHITECTURE.md)**.
+
 ## Why confidential RWA funding
 Private credit and RWA funding require onchain settlement, but investors cannot expose bid size, allocation, or repayment exposure publicly. Obscura Finance keeps allocations private by default and enables auditors to view sensitive details only when permissioned.
 
