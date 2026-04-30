@@ -50,13 +50,20 @@ export declare namespace ObscuraDealRoom {
     sealedBid: BytesLike;
     amount: BytesLike;
     claimed: boolean;
+    requestId: BigNumberish;
   };
 
   export type BidStructOutput = [
     sealedBid: string,
     amount: string,
-    claimed: boolean
-  ] & { sealedBid: string; amount: string; claimed: boolean };
+    claimed: boolean,
+    requestId: bigint
+  ] & {
+    sealedBid: string;
+    amount: string;
+    claimed: boolean;
+    requestId: bigint;
+  };
 
   export type DealStruct = {
     issuer: AddressLike;
@@ -88,6 +95,7 @@ export interface ObscuraDealRoomInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "claim"
+      | "claimableDepositRequest"
       | "closeDeal"
       | "confidentialToken"
       | "createDeal"
@@ -96,6 +104,8 @@ export interface ObscuraDealRoomInterface extends Interface {
       | "getDealsCount"
       | "grantAuditorAccess"
       | "hasAuditorAccess"
+      | "identityRegistry"
+      | "pendingDepositRequest"
       | "repay"
       | "setFunded"
       | "setFundingOpen"
@@ -109,10 +119,16 @@ export interface ObscuraDealRoomInterface extends Interface {
       | "Claimed"
       | "DealCreated"
       | "DealStateUpdated"
+      | "DepositRequest"
+      | "RedeemRequest"
       | "RepaymentSubmitted"
   ): EventFragment;
 
   encodeFunctionData(functionFragment: "claim", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "claimableDepositRequest",
+    values: [BigNumberish, AddressLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "closeDeal",
     values: [BigNumberish]
@@ -146,6 +162,14 @@ export interface ObscuraDealRoomInterface extends Interface {
     values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "identityRegistry",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "pendingDepositRequest",
+    values: [BigNumberish, AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "repay",
     values: [BigNumberish, BytesLike, BytesLike]
   ): string;
@@ -163,6 +187,10 @@ export interface ObscuraDealRoomInterface extends Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "claim", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "claimableDepositRequest",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "closeDeal", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "confidentialToken",
@@ -184,6 +212,14 @@ export interface ObscuraDealRoomInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "hasAuditorAccess",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "identityRegistry",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingDepositRequest",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "repay", data: BytesLike): Result;
@@ -278,6 +314,62 @@ export namespace DealStateUpdatedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace DepositRequestEvent {
+  export type InputTuple = [
+    controller: AddressLike,
+    owner: AddressLike,
+    requestId: BigNumberish,
+    sender: AddressLike,
+    assets: BigNumberish
+  ];
+  export type OutputTuple = [
+    controller: string,
+    owner: string,
+    requestId: bigint,
+    sender: string,
+    assets: bigint
+  ];
+  export interface OutputObject {
+    controller: string;
+    owner: string;
+    requestId: bigint;
+    sender: string;
+    assets: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace RedeemRequestEvent {
+  export type InputTuple = [
+    controller: AddressLike,
+    owner: AddressLike,
+    requestId: BigNumberish,
+    sender: AddressLike,
+    shares: BigNumberish
+  ];
+  export type OutputTuple = [
+    controller: string,
+    owner: string,
+    requestId: bigint,
+    sender: string,
+    shares: bigint
+  ];
+  export interface OutputObject {
+    controller: string;
+    owner: string;
+    requestId: bigint;
+    sender: string;
+    shares: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export namespace RepaymentSubmittedEvent {
   export type InputTuple = [dealId: BigNumberish, amountHandle: BytesLike];
   export type OutputTuple = [dealId: bigint, amountHandle: string];
@@ -336,6 +428,12 @@ export interface ObscuraDealRoom extends BaseContract {
 
   claim: TypedContractMethod<[dealId: BigNumberish], [void], "nonpayable">;
 
+  claimableDepositRequest: TypedContractMethod<
+    [requestId: BigNumberish, controller: AddressLike],
+    [bigint],
+    "view"
+  >;
+
   closeDeal: TypedContractMethod<[dealId: BigNumberish], [void], "nonpayable">;
 
   confidentialToken: TypedContractMethod<[], [string], "view">;
@@ -372,6 +470,14 @@ export interface ObscuraDealRoom extends BaseContract {
     "view"
   >;
 
+  identityRegistry: TypedContractMethod<[], [string], "view">;
+
+  pendingDepositRequest: TypedContractMethod<
+    [requestId: BigNumberish, controller: AddressLike],
+    [bigint],
+    "view"
+  >;
+
   repay: TypedContractMethod<
     [dealId: BigNumberish, encryptedAmount: BytesLike, inputProof: BytesLike],
     [void],
@@ -404,6 +510,13 @@ export interface ObscuraDealRoom extends BaseContract {
   getFunction(
     nameOrSignature: "claim"
   ): TypedContractMethod<[dealId: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "claimableDepositRequest"
+  ): TypedContractMethod<
+    [requestId: BigNumberish, controller: AddressLike],
+    [bigint],
+    "view"
+  >;
   getFunction(
     nameOrSignature: "closeDeal"
   ): TypedContractMethod<[dealId: BigNumberish], [void], "nonpayable">;
@@ -446,6 +559,16 @@ export interface ObscuraDealRoom extends BaseContract {
   ): TypedContractMethod<
     [dealId: BigNumberish, auditor: AddressLike],
     [boolean],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "identityRegistry"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "pendingDepositRequest"
+  ): TypedContractMethod<
+    [requestId: BigNumberish, controller: AddressLike],
+    [bigint],
     "view"
   >;
   getFunction(
@@ -510,6 +633,20 @@ export interface ObscuraDealRoom extends BaseContract {
     DealStateUpdatedEvent.OutputObject
   >;
   getEvent(
+    key: "DepositRequest"
+  ): TypedContractEvent<
+    DepositRequestEvent.InputTuple,
+    DepositRequestEvent.OutputTuple,
+    DepositRequestEvent.OutputObject
+  >;
+  getEvent(
+    key: "RedeemRequest"
+  ): TypedContractEvent<
+    RedeemRequestEvent.InputTuple,
+    RedeemRequestEvent.OutputTuple,
+    RedeemRequestEvent.OutputObject
+  >;
+  getEvent(
     key: "RepaymentSubmitted"
   ): TypedContractEvent<
     RepaymentSubmittedEvent.InputTuple,
@@ -571,6 +708,28 @@ export interface ObscuraDealRoom extends BaseContract {
       DealStateUpdatedEvent.InputTuple,
       DealStateUpdatedEvent.OutputTuple,
       DealStateUpdatedEvent.OutputObject
+    >;
+
+    "DepositRequest(address,address,uint256,address,uint256)": TypedContractEvent<
+      DepositRequestEvent.InputTuple,
+      DepositRequestEvent.OutputTuple,
+      DepositRequestEvent.OutputObject
+    >;
+    DepositRequest: TypedContractEvent<
+      DepositRequestEvent.InputTuple,
+      DepositRequestEvent.OutputTuple,
+      DepositRequestEvent.OutputObject
+    >;
+
+    "RedeemRequest(address,address,uint256,address,uint256)": TypedContractEvent<
+      RedeemRequestEvent.InputTuple,
+      RedeemRequestEvent.OutputTuple,
+      RedeemRequestEvent.OutputObject
+    >;
+    RedeemRequest: TypedContractEvent<
+      RedeemRequestEvent.InputTuple,
+      RedeemRequestEvent.OutputTuple,
+      RedeemRequestEvent.OutputObject
     >;
 
     "RepaymentSubmitted(uint256,bytes32)": TypedContractEvent<

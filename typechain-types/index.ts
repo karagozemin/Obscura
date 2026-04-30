@@ -16,5 +16,11 @@ export type { Nox } from "./@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox"
 export { Nox__factory } from "./factories/@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox__factory";
 export type { IERC165 } from "./@openzeppelin/contracts/utils/introspection/IERC165";
 export { IERC165__factory } from "./factories/@openzeppelin/contracts/utils/introspection/IERC165__factory";
+export type { IdentityRegistry } from "./contracts/IdentityRegistry";
+export { IdentityRegistry__factory } from "./factories/contracts/IdentityRegistry__factory";
+export type { ICompliance } from "./contracts/interfaces/IERC3643.sol/ICompliance";
+export { ICompliance__factory } from "./factories/contracts/interfaces/IERC3643.sol/ICompliance__factory";
+export type { IIdentityRegistry } from "./contracts/interfaces/IERC3643.sol/IIdentityRegistry";
+export { IIdentityRegistry__factory } from "./factories/contracts/interfaces/IERC3643.sol/IIdentityRegistry__factory";
 export type { ObscuraDealRoom } from "./contracts/ObscuraDealRoom";
 export { ObscuraDealRoom__factory } from "./factories/contracts/ObscuraDealRoom__factory";

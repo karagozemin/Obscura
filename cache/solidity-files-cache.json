@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/eminkaragoz/Obscura/contracts/ObscuraDealRoom.sol": {
-      "lastModificationDate": 1777405551588,
-      "contentHash": "1687a12767b45244552687e58252fea9",
+      "lastModificationDate": 1777584007168,
+      "contentHash": "5b4877b85f6a5326bef7e69ceb7a88bb",
       "sourceName": "contracts/ObscuraDealRoom.sol",
       "solcConfig": {
         "version": "0.8.28",
@@ -31,7 +31,8 @@
       },
       "imports": [
         "@iexec-nox/nox-confidential-contracts/contracts/interfaces/IERC7984.sol",
-        "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"
+        "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol",
+        "./interfaces/IERC3643.sol"
       ],
       "versionPragmas": [
         "^0.8.28"
@@ -336,6 +337,81 @@
       ],
       "artifacts": [
         "IERC165"
+      ]
+    },
+    "/Users/eminkaragoz/Obscura/contracts/IdentityRegistry.sol": {
+      "lastModificationDate": 1777583969651,
+      "contentHash": "ab3dcf465129e432ff7db56dc6bfc854",
+      "sourceName": "contracts/IdentityRegistry.sol",
+      "solcConfig": {
+        "version": "0.8.28",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./interfaces/IERC3643.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.28"
+      ],
+      "artifacts": [
+        "IdentityRegistry"
+      ]
+    },
+    "/Users/eminkaragoz/Obscura/contracts/interfaces/IERC3643.sol": {
+      "lastModificationDate": 1777583961857,
+      "contentHash": "7b6698a8f008e2cf5477e4ebcaf2a5e3",
+      "sourceName": "contracts/interfaces/IERC3643.sol",
+      "solcConfig": {
+        "version": "0.8.28",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.28"
+      ],
+      "artifacts": [
+        "ICompliance",
+        "IIdentityRegistry"
       ]
     }
   }

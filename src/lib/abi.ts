@@ -1,3 +1,59 @@
+export const identityRegistryAbi = [
+  {
+    type: "function",
+    name: "registerIdentity",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "investor", type: "address" },
+      { name: "identityHash", type: "bytes32" }
+    ],
+    outputs: []
+  },
+  {
+    type: "function",
+    name: "revokeIdentity",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "investor", type: "address" }],
+    outputs: []
+  },
+  {
+    type: "function",
+    name: "isVerified",
+    stateMutability: "view",
+    inputs: [{ name: "investor", type: "address" }],
+    outputs: [{ name: "", type: "bool" }]
+  },
+  {
+    type: "function",
+    name: "identity",
+    stateMutability: "view",
+    inputs: [{ name: "investor", type: "address" }],
+    outputs: [{ name: "", type: "bytes32" }]
+  },
+  {
+    type: "function",
+    name: "admin",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "address" }]
+  },
+  {
+    type: "event",
+    name: "IdentityRegistered",
+    inputs: [
+      { name: "investor", type: "address", indexed: true },
+      { name: "identityHash", type: "bytes32", indexed: false }
+    ]
+  },
+  {
+    type: "event",
+    name: "IdentityRevoked",
+    inputs: [
+      { name: "investor", type: "address", indexed: true }
+    ]
+  }
+] as const;
+
 export const dealRoomAbi = [
   {
     type: "function",
@@ -132,7 +188,8 @@ export const dealRoomAbi = [
         components: [
           { name: "sealedBid", type: "bytes32" },
           { name: "amount", type: "bytes32" },
-          { name: "claimed", type: "bool" }
+          { name: "claimed", type: "bool" },
+          { name: "requestId", type: "uint256" }
         ]
       }
     ]
@@ -146,6 +203,45 @@ export const dealRoomAbi = [
       { name: "auditor", type: "address" }
     ],
     outputs: [{ name: "", type: "bool" }]
+  },
+  {
+    type: "function",
+    name: "identityRegistry",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "address" }]
+  },
+  {
+    type: "function",
+    name: "pendingDepositRequest",
+    stateMutability: "view",
+    inputs: [
+      { name: "requestId", type: "uint256" },
+      { name: "controller", type: "address" }
+    ],
+    outputs: [{ name: "", type: "uint256" }]
+  },
+  {
+    type: "event",
+    name: "DepositRequest",
+    inputs: [
+      { name: "controller", type: "address", indexed: true },
+      { name: "owner", type: "address", indexed: true },
+      { name: "requestId", type: "uint256", indexed: true },
+      { name: "sender", type: "address", indexed: false },
+      { name: "assets", type: "uint256", indexed: false }
+    ]
+  },
+  {
+    type: "event",
+    name: "RedeemRequest",
+    inputs: [
+      { name: "controller", type: "address", indexed: true },
+      { name: "owner", type: "address", indexed: true },
+      { name: "requestId", type: "uint256", indexed: true },
+      { name: "sender", type: "address", indexed: false },
+      { name: "shares", type: "uint256", indexed: false }
+    ]
   }
 ] as const;
 

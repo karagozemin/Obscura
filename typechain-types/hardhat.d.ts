@@ -30,6 +30,18 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
+      name: "IdentityRegistry",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IdentityRegistry__factory>;
+    getContractFactory(
+      name: "ICompliance",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ICompliance__factory>;
+    getContractFactory(
+      name: "IIdentityRegistry",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IIdentityRegistry__factory>;
+    getContractFactory(
       name: "ObscuraDealRoom",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ObscuraDealRoom__factory>;
@@ -55,6 +67,21 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC165>;
     getContractAt(
+      name: "IdentityRegistry",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IdentityRegistry>;
+    getContractAt(
+      name: "ICompliance",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ICompliance>;
+    getContractAt(
+      name: "IIdentityRegistry",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IIdentityRegistry>;
+    getContractAt(
       name: "ObscuraDealRoom",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -77,6 +104,18 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC165>;
     deployContract(
+      name: "IdentityRegistry",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IdentityRegistry>;
+    deployContract(
+      name: "ICompliance",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ICompliance>;
+    deployContract(
+      name: "IIdentityRegistry",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IIdentityRegistry>;
+    deployContract(
       name: "ObscuraDealRoom",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ObscuraDealRoom>;
@@ -101,6 +140,21 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC165>;
+    deployContract(
+      name: "IdentityRegistry",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IdentityRegistry>;
+    deployContract(
+      name: "ICompliance",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ICompliance>;
+    deployContract(
+      name: "IIdentityRegistry",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IIdentityRegistry>;
     deployContract(
       name: "ObscuraDealRoom",
       args: any[],
