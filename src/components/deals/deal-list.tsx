@@ -228,7 +228,13 @@ export function DealList({ mode }: { mode: Mode }) {
                     </span>
                   </div>
                 </div>
-                {deal.state >= 3 && <ClaimButton dealId={index} />}
+                {deal.state >= 3 && bid && !bid.claimed && <ClaimButton dealId={index} />}
+                {deal.state >= 3 && !bid && (
+                  <p className="text-xs text-warning">No bid found for this wallet.</p>
+                )}
+                {deal.state >= 3 && bid?.claimed && (
+                  <p className="text-xs text-success">Already claimed with this wallet.</p>
+                )}
               </div>
             )}
           </Card>

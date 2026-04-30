@@ -32,8 +32,8 @@ export function Nav() {
               priority
             />
           </div>
-          <span className="text-sm font-semibold tracking-tight text-text-1">
-            Obscura<span className="text-gold">.</span>
+          <span className="text-lg font-semibold tracking-tight text-text-1">
+            Obscura
           </span>
         </Link>
 
