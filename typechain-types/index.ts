@@ -22,5 +22,11 @@ export type { ICompliance } from "./contracts/interfaces/IERC3643.sol/IComplianc
 export { ICompliance__factory } from "./factories/contracts/interfaces/IERC3643.sol/ICompliance__factory";
 export type { IIdentityRegistry } from "./contracts/interfaces/IERC3643.sol/IIdentityRegistry";
 export { IIdentityRegistry__factory } from "./factories/contracts/interfaces/IERC3643.sol/IIdentityRegistry__factory";
+export type { IERC7540 } from "./contracts/interfaces/IERC7540.sol/IERC7540";
+export { IERC7540__factory } from "./factories/contracts/interfaces/IERC7540.sol/IERC7540__factory";
+export type { IERC7540Deposit } from "./contracts/interfaces/IERC7540.sol/IERC7540Deposit";
+export { IERC7540Deposit__factory } from "./factories/contracts/interfaces/IERC7540.sol/IERC7540Deposit__factory";
+export type { IERC7540Redeem } from "./contracts/interfaces/IERC7540.sol/IERC7540Redeem";
+export { IERC7540Redeem__factory } from "./factories/contracts/interfaces/IERC7540.sol/IERC7540Redeem__factory";
 export type { ObscuraDealRoom } from "./contracts/ObscuraDealRoom";
 export { ObscuraDealRoom__factory } from "./factories/contracts/ObscuraDealRoom__factory";

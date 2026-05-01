@@ -2,3 +2,4 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as ierc3643Sol from "./IERC3643.sol";
+export * as ierc7540Sol from "./IERC7540.sol";

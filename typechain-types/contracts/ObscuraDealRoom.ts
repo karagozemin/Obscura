@@ -96,6 +96,7 @@ export interface ObscuraDealRoomInterface extends Interface {
     nameOrSignature:
       | "claim"
       | "claimableDepositRequest"
+      | "claimableRedeemRequest"
       | "closeDeal"
       | "confidentialToken"
       | "createDeal"
@@ -106,7 +107,10 @@ export interface ObscuraDealRoomInterface extends Interface {
       | "hasAuditorAccess"
       | "identityRegistry"
       | "pendingDepositRequest"
+      | "pendingRedeemRequest"
       | "repay"
+      | "requestDeposit"
+      | "requestRedeem"
       | "setFunded"
       | "setFundingOpen"
       | "submitBid"
@@ -127,6 +131,10 @@ export interface ObscuraDealRoomInterface extends Interface {
   encodeFunctionData(functionFragment: "claim", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "claimableDepositRequest",
+    values: [BigNumberish, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "claimableRedeemRequest",
     values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
@@ -170,8 +178,20 @@ export interface ObscuraDealRoomInterface extends Interface {
     values: [BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "pendingRedeemRequest",
+    values: [BigNumberish, AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "repay",
     values: [BigNumberish, BytesLike, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "requestDeposit",
+    values: [BigNumberish, AddressLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "requestRedeem",
+    values: [BigNumberish, AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setFunded",
@@ -189,6 +209,10 @@ export interface ObscuraDealRoomInterface extends Interface {
   decodeFunctionResult(functionFragment: "claim", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "claimableDepositRequest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "claimableRedeemRequest",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "closeDeal", data: BytesLike): Result;
@@ -222,7 +246,19 @@ export interface ObscuraDealRoomInterface extends Interface {
     functionFragment: "pendingDepositRequest",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingRedeemRequest",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "repay", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "requestDeposit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "requestRedeem",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setFunded", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setFundingOpen",
@@ -434,6 +470,12 @@ export interface ObscuraDealRoom extends BaseContract {
     "view"
   >;
 
+  claimableRedeemRequest: TypedContractMethod<
+    [arg0: BigNumberish, arg1: AddressLike],
+    [bigint],
+    "view"
+  >;
+
   closeDeal: TypedContractMethod<[dealId: BigNumberish], [void], "nonpayable">;
 
   confidentialToken: TypedContractMethod<[], [string], "view">;
@@ -478,9 +520,27 @@ export interface ObscuraDealRoom extends BaseContract {
     "view"
   >;
 
+  pendingRedeemRequest: TypedContractMethod<
+    [arg0: BigNumberish, arg1: AddressLike],
+    [bigint],
+    "view"
+  >;
+
   repay: TypedContractMethod<
     [dealId: BigNumberish, encryptedAmount: BytesLike, inputProof: BytesLike],
     [void],
+    "nonpayable"
+  >;
+
+  requestDeposit: TypedContractMethod<
+    [assets: BigNumberish, controller: AddressLike, arg2: AddressLike],
+    [bigint],
+    "nonpayable"
+  >;
+
+  requestRedeem: TypedContractMethod<
+    [shares: BigNumberish, controller: AddressLike, arg2: AddressLike],
+    [bigint],
     "nonpayable"
   >;
 
@@ -514,6 +574,13 @@ export interface ObscuraDealRoom extends BaseContract {
     nameOrSignature: "claimableDepositRequest"
   ): TypedContractMethod<
     [requestId: BigNumberish, controller: AddressLike],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "claimableRedeemRequest"
+  ): TypedContractMethod<
+    [arg0: BigNumberish, arg1: AddressLike],
     [bigint],
     "view"
   >;
@@ -572,10 +639,31 @@ export interface ObscuraDealRoom extends BaseContract {
     "view"
   >;
   getFunction(
+    nameOrSignature: "pendingRedeemRequest"
+  ): TypedContractMethod<
+    [arg0: BigNumberish, arg1: AddressLike],
+    [bigint],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "repay"
   ): TypedContractMethod<
     [dealId: BigNumberish, encryptedAmount: BytesLike, inputProof: BytesLike],
     [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "requestDeposit"
+  ): TypedContractMethod<
+    [assets: BigNumberish, controller: AddressLike, arg2: AddressLike],
+    [bigint],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "requestRedeem"
+  ): TypedContractMethod<
+    [shares: BigNumberish, controller: AddressLike, arg2: AddressLike],
+    [bigint],
     "nonpayable"
   >;
   getFunction(

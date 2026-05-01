@@ -13,6 +13,7 @@ import { ClaimButton } from "@/components/deals/claim-button";
 import { GrantAuditor } from "@/components/deals/grant-auditor";
 import { RepayForm } from "@/components/deals/repay-form";
 import { TxLink } from "@/components/tx/tx-link";
+import { AiBrief } from "@/components/deals/ai-brief";
 
 const dealRoomAddress = DEAL_ROOM_ADDRESS as `0x${string}`;
 type Mode = "issuer" | "investor" | "auditor";
@@ -201,6 +202,15 @@ export function DealList({ mode }: { mode: Mode }) {
                 </div>
               </div>
             )}
+
+            {/* AI Due Diligence Brief — all modes */}
+            <AiBrief
+              title={deal.metadata.title}
+              category={deal.metadata.category}
+              description={deal.metadata.description}
+              maturityDate={deal.metadata.maturityDate}
+              documentHash={deal.metadata.documentHash}
+            />
 
             {/* Investor actions */}
             {mode === "investor" && (

@@ -94,6 +94,17 @@ Key files:
 - `src/components/deals/encrypted-amount.tsx`
 - `src/lib/nox-handle.ts`
 
+## ChainGPT AI integration
+
+Each deal card includes an **AI Due Diligence Brief** powered by ChainGPT's Web3 LLM. Clicking "Generate Brief" streams a structured institutional analysis:
+
+- **Overview** — deal summary in context of the RWA category
+- **Risk Factors** — three category-specific risks
+- **Compliance** — ERC-3643 KYC gate and regulatory considerations
+- **Verdict** — one-sentence recommendation for institutional investors
+
+The brief is generated from public deal metadata (title, category, description, maturity date). Encrypted amounts are never sent to the AI. Set `CHAINGPT_API_KEY` in `.env` to enable.
+
 ## Tech stack
 - Next.js + TypeScript + Tailwind CSS
 - wagmi + viem
@@ -154,8 +165,8 @@ npm run dev
 9. Auditor views permissioned disclosure via Auditor Lookup.
 
 ## Contract addresses
-- Obscura Deal Room (Arbitrum Sepolia): see `NEXT_PUBLIC_DEAL_ROOM_ADDRESS` after deploy
-- Identity Registry — ERC-3643 (Arbitrum Sepolia): see `NEXT_PUBLIC_IDENTITY_REGISTRY_ADDRESS` after deploy
+- Obscura Deal Room (Arbitrum Sepolia): `0xC193905feD3B1A2Fc8A84bB1a777cB1fb02aa04f`
+- Identity Registry — ERC-3643 (Arbitrum Sepolia): `0xE07395aca1Fa3374C2a45FE95d653451D73770E1`
 - Confidential Token (ERC-7984 cUSDC, Arbitrum Sepolia): `0x1ccec6bc60db15e4055d43dc2531bb7d4e5b808e`
 - Underlying USDC ERC-20 (Arbitrum Sepolia): `0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d`
 

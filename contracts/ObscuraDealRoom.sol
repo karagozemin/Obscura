@@ -4,29 +4,13 @@ pragma solidity ^0.8.28;
 import {IERC7984} from "@iexec-nox/nox-confidential-contracts/contracts/interfaces/IERC7984.sol";
 import {Nox, euint256, externalEuint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {IIdentityRegistry} from "./interfaces/IERC3643.sol";
+import {IERC7540} from "./interfaces/IERC7540.sol";
 
 /// @notice Confidential RWA deal room combining:
 ///   - ERC-7984: confidential token transfers (hidden bid/repayment amounts)
 ///   - ERC-3643: investor identity/compliance checks before bid submission
-///   - ERC-7540: async deposit request pattern for sealed bid flow
-contract ObscuraDealRoom {
-    // ─────────────────────────── ERC-7540 events ────────────────────────────
-    /// @dev ERC-7540 async deposit request. `assets` is 0 because amount is confidential (ERC-7984).
-    event DepositRequest(
-        address indexed controller,
-        address indexed owner,
-        uint256 indexed requestId,
-        address sender,
-        uint256 assets
-    );
-    /// @dev ERC-7540 async redeem (claim) request.
-    event RedeemRequest(
-        address indexed controller,
-        address indexed owner,
-        uint256 indexed requestId,
-        address sender,
-        uint256 shares
-    );
+///   - ERC-7540: full async vault interface; assets/shares = 0 because amounts are euint256 handles
+contract ObscuraDealRoom is IERC7540 {
 
     // ────────────────────────── Deal room events ────────────────────────────
     event DealCreated(uint256 indexed dealId, address indexed issuer);
@@ -225,16 +209,45 @@ contract ObscuraDealRoom {
         emit DealStateUpdated(dealId, DealState.Claimed);
     }
 
-    // ───────────────────────────── ERC-7540 views ────────────────────────────
+    // ───────────────────── ERC-7540 full interface impl ─────────────────────
 
-    /// @notice Returns pending deposit assets for a requestId+controller pair.
-    ///         Always 0 for confidential deals; use getBidForInvestor for the encrypted handle.
+    /// @notice ERC-7540 requestDeposit entry point for interface compliance.
+    ///         For confidential vaults use submitBid(dealId, sealedBid, encryptedAmount, proof) directly.
+    ///         assets must be 0; encrypted amount is a Nox euint256 handle passed to submitBid.
+    function requestDeposit(uint256 assets, address controller, address) external returns (uint256 requestId) {
+        require(assets == 0, "ERC7540: use submitBid for confidential deposits");
+        requestId = _nextRequestId++;
+        _pendingDepositRequests[requestId][controller] = 0;
+        emit DepositRequest(controller, controller, requestId, msg.sender, 0);
+    }
+
+    /// @notice ERC-7540 requestRedeem entry point for interface compliance.
+    ///         For confidential vaults use claim(dealId) directly.
+    function requestRedeem(uint256 shares, address controller, address) external returns (uint256 requestId) {
+        require(shares == 0, "ERC7540: use claim for confidential redeems");
+        requestId = _nextRequestId++;
+        emit RedeemRequest(controller, controller, requestId, msg.sender, 0);
+        return requestId;
+    }
+
+    /// @notice Returns pending deposit assets. Always 0 — use getBidForInvestor for the euint256 handle.
     function pendingDepositRequest(uint256 requestId, address controller) external view returns (uint256) {
         return _pendingDepositRequests[requestId][controller];
     }
 
+    /// @notice Returns claimable deposit assets. Always 0 for confidential vault.
     function claimableDepositRequest(uint256 requestId, address controller) external view returns (uint256) {
         return _claimableDepositRequests[requestId][controller];
+    }
+
+    /// @notice Returns pending redeem shares. Always 0 for confidential vault.
+    function pendingRedeemRequest(uint256, address) external pure returns (uint256) {
+        return 0;
+    }
+
+    /// @notice Returns claimable redeem shares. Always 0 for confidential vault.
+    function claimableRedeemRequest(uint256, address) external pure returns (uint256) {
+        return 0;
     }
 
     // ─────────────────────────────── Views ───────────────────────────────────

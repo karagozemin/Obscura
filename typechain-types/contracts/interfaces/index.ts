@@ -3,3 +3,5 @@
 /* eslint-disable */
 import type * as ierc3643Sol from "./IERC3643.sol";
 export type { ierc3643Sol };
+import type * as ierc7540Sol from "./IERC7540.sol";
+export type { ierc7540Sol };
