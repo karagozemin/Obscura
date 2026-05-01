@@ -12,6 +12,7 @@ const navItems = [
   { href: "/investor",label: "Investor" },
   { href: "/auditor", label: "Auditor"  },
   { href: "/demo",    label: "Demo"     },
+  { href: "/admin",   label: "Admin"    },
 ];
 
 export function Nav() {

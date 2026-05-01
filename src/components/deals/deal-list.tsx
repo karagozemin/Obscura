@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
-import { useAccount, usePublicClient, useReadContract, useReadContracts, useWriteContract } from "wagmi";
+import { useEffect, useMemo } from "react";
+import { useAccount, useBlockNumber, usePublicClient, useReadContract, useReadContracts, useWriteContract } from "wagmi";
 import { dealRoomAbi } from "@/lib/abi";
 import { DEAL_ROOM_ADDRESS } from "@/lib/contracts";
 import { Card } from "@/components/ui/card";
@@ -24,7 +24,9 @@ export function DealList({ mode }: { mode: Mode }) {
   const { data: actionHash, writeContract, isPending: actionPending, error: actionError } = useWriteContract();
   const hasAddress = Boolean(DEAL_ROOM_ADDRESS);
 
-  const { data: count } = useReadContract({
+  const { data: blockNumber } = useBlockNumber({ watch: true });
+
+  const { data: count, refetch: refetchCount } = useReadContract({
     address: dealRoomAddress,
     abi: dealRoomAbi,
     functionName: "getDealsCount",
@@ -43,7 +45,7 @@ export function DealList({ mode }: { mode: Mode }) {
     [dealCount]
   );
 
-  const { data: dealResults } = useReadContracts({
+  const { data: dealResults, refetch: refetchDeals } = useReadContracts({
     contracts: dealContracts,
     query: { enabled: dealCount > 0 },
   });
@@ -58,7 +60,7 @@ export function DealList({ mode }: { mode: Mode }) {
     [dealCount, address]
   );
 
-  const { data: bidResults } = useReadContracts({
+  const { data: bidResults, refetch: refetchBids } = useReadContracts({
     contracts: bidContracts,
     query: { enabled: mode === "investor" && dealCount > 0 && !!address },
   });
@@ -73,10 +75,19 @@ export function DealList({ mode }: { mode: Mode }) {
     [dealCount, address]
   );
 
-  const { data: accessResults } = useReadContracts({
+  const { data: accessResults, refetch: refetchAccess } = useReadContracts({
     contracts: accessContracts,
     query: { enabled: mode === "auditor" && dealCount > 0 && !!address },
   });
+
+  // Refetch all on-chain data whenever a new block arrives.
+  useEffect(() => {
+    if (!blockNumber) return;
+    void refetchCount();
+    void refetchDeals();
+    void refetchBids();
+    void refetchAccess();
+  }, [blockNumber, refetchCount, refetchDeals, refetchBids, refetchAccess]);
 
   if (!DEAL_ROOM_ADDRESS) {
     return (

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { Nav } from "@/components/nav";
+import { ChainGuard } from "@/components/chain-guard";
 import { ColorBendsBackground } from "@/components/backgrounds/ColorBendsBackground";
 
 const inter = Inter({
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={inter.variable}>
       <body className="font-sans antialiased">
         <Providers>
+          <ChainGuard>
           <div className="relative min-h-screen bg-bg">
             {/* Ambient background */}
             <div className="pointer-events-none fixed inset-0 bg-hero-gradient" />
@@ -41,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </footer>
             </div>
           </div>
+          </ChainGuard>
         </Providers>
       </body>
     </html>
