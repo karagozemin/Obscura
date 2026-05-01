@@ -7,7 +7,6 @@ import { DEAL_ROOM_ADDRESS } from "@/lib/contracts";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DealStateBadge } from "@/components/deals/deal-state";
-import { EncryptedAmount } from "@/components/deals/encrypted-amount";
 import { BidForm } from "@/components/deals/bid-form";
 import { ClaimButton } from "@/components/deals/claim-button";
 import { GrantAuditor } from "@/components/deals/grant-auditor";
@@ -240,7 +239,7 @@ export function DealList({ mode }: { mode: Mode }) {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-text-2">Committed</span>
-                    <span>{bid ? <EncryptedAmount handle={bid.amount} /> : <span className="text-text-3">—</span>}</span>
+                    <span className="text-xs text-gold">Encrypted · Nox</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-text-2">Claimed</span>
