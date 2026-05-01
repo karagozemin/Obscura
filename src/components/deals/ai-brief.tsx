@@ -55,10 +55,14 @@ export function AiBrief({ title, category, description, maturityDate, documentHa
   return (
     <div className="border-t border-border pt-5 mt-5">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-semibold uppercase tracking-widest text-text-3">
-          AI Due Diligence Brief
-          <span className="ml-2 text-[10px] normal-case tracking-normal font-normal opacity-60">powered by ChainGPT</span>
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-xs font-semibold uppercase tracking-widest text-text-1">
+            AI Due Diligence Brief
+          </p>
+          <span className="text-[10px] font-medium text-text-3 border border-border rounded px-1.5 py-0.5">
+            ChainGPT
+          </span>
+        </div>
         {!loading && (
           <Button variant="outline" size="sm" onClick={generate}>
             {done ? "Regenerate" : "Generate Brief"}

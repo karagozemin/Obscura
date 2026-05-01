@@ -8,7 +8,7 @@ import { DEAL_ROOM_ADDRESS, CONFIDENTIAL_TOKEN_ADDRESS } from "@/lib/contracts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { parseUnits } from "viem";
+import { keccak256, toBytes, parseUnits } from "viem";
 import { TxLink } from "@/components/tx/tx-link";
 import { useHandleClient } from "@/lib/nox-handle";
 
@@ -107,15 +107,16 @@ export function BidForm({ dealId }: { dealId: number }) {
     setIsEncrypting(true);
     try {
       const value = parseUnits(amount, tokenDecimals);
-      const { handle, handleProof } = await handleClient.encryptInput(
+      const result = await handleClient.encryptInput(
         value,
         "uint256",
         DEAL_ROOM_ADDRESS as `0x${string}`
       );
-      setEncryptedHandle(handle);
-      setHandleProof(handleProof);
+      setEncryptedHandle(result.handle);
+      setHandleProof(result.handleProof);
     } catch (error) {
-      setEncryptError(error instanceof Error ? error.message : "Encryption failed.");
+      console.error("Encrypt error:", error);
+      setEncryptError(error instanceof Error ? error.message : String(error));
     } finally {
       setIsEncrypting(false);
     }
@@ -163,7 +164,16 @@ export function BidForm({ dealId }: { dealId: number }) {
     <div className="space-y-3">
       <div className="grid gap-3 md:grid-cols-2">
         <div className="space-y-2">
-          <Label>Sealed Bid Commitment (bytes32)</Label>
+          <div className="flex items-center justify-between">
+            <Label>Sealed Bid Commitment (bytes32)</Label>
+            <button
+              type="button"
+              onClick={() => setSealedBid(keccak256(toBytes(`obscura-bid-${dealId}-${Date.now()}`)))}
+              className="text-xs text-text-3 hover:text-gold transition-colors"
+            >
+              Generate
+            </button>
+          </div>
           <Input value={sealedBid} onChange={(event) => setSealedBid(event.target.value)} placeholder="0x..." />
         </div>
         <div className="space-y-2">

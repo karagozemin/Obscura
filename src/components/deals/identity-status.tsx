@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useAccount, useReadContract } from "wagmi";
 import { identityRegistryAbi } from "@/lib/abi";
 import { IDENTITY_REGISTRY_ADDRESS } from "@/lib/contracts";
 
 export function IdentityStatus() {
+  const [mounted, setMounted] = useState(false);
   const { address, isConnected } = useAccount();
 
   const { data: isVerified, isLoading } = useReadContract({
@@ -12,10 +14,12 @@ export function IdentityStatus() {
     abi: identityRegistryAbi,
     functionName: "isVerified",
     args: address ? [address] : undefined,
-    query: { enabled: !!address && !!IDENTITY_REGISTRY_ADDRESS },
+    query: { enabled: mounted && !!address && !!IDENTITY_REGISTRY_ADDRESS },
   });
 
-  if (!isConnected || !address) return null;
+  useEffect(() => { setMounted(true); }, []);
+
+  if (!mounted || !isConnected || !address) return null;
 
   return (
     <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm">
